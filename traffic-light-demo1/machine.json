@@ -1,402 +1,76 @@
 {
-  "id": "trafficLight",
-  "key": "trafficLight",
-  "type": "compound",
-  "initial": {
-    "target": [
-      "#trafficLight.red"
-    ],
-    "source": "#trafficLight",
-    "actions": [],
-    "eventType": null
-  },
-  "history": false,
-  "states": {
-    "red": {
-      "id": "trafficLight.red",
-      "key": "red",
-      "type": "atomic",
-      "initial": {
-        "target": [],
-        "source": "#trafficLight.red",
-        "actions": [],
-        "eventType": null
-      },
-      "history": false,
-      "states": {},
-      "on": {
-        "TIMER": [
-          {
-            "target": [
-              "#trafficLight.green"
-            ],
-            "actions": [],
-            "source": "#trafficLight.red",
-            "reenter": false,
-            "eventType": "TIMER"
-          }
-        ],
-        "PRESS_WALK": [
-          {
-            "actions": [
-              null
-            ],
-            "source": "#trafficLight.red",
-            "reenter": false,
-            "eventType": "PRESS_WALK"
-          }
-        ],
-        "PRESS_RIGHT_TURN": [
-          {
-            "actions": [
-              null
-            ],
-            "source": "#trafficLight.red",
-            "reenter": false,
-            "eventType": "PRESS_RIGHT_TURN"
-          }
-        ]
-      },
-      "transitions": [
-        {
-          "target": [
-            "#trafficLight.green"
-          ],
-          "actions": [],
-          "source": "#trafficLight.red",
-          "reenter": false,
-          "eventType": "TIMER"
-        },
-        {
-          "actions": [
-            null
-          ],
-          "source": "#trafficLight.red",
-          "reenter": false,
-          "eventType": "PRESS_WALK"
-        },
-        {
-          "actions": [
-            null
-          ],
-          "source": "#trafficLight.red",
-          "reenter": false,
-          "eventType": "PRESS_RIGHT_TURN"
-        }
-      ],
-      "entry": [],
-      "exit": [],
-      "order": 1,
-      "invoke": [],
-      "description": "The traffic light is red. Vehicles must stop, and pedestrians can press the walk button to request a walk signal.",
-      "tags": []
-    },
-    "green": {
-      "id": "trafficLight.green",
-      "key": "green",
-      "type": "atomic",
-      "initial": {
-        "target": [],
-        "source": "#trafficLight.green",
-        "actions": [],
-        "eventType": null
-      },
-      "history": false,
-      "states": {},
-      "on": {
-        "TIMER": [
-          {
-            "target": [
-              "#trafficLight.greenArrow"
-            ],
-            "actions": [],
-            "source": "#trafficLight.green",
-            "reenter": false,
-            "eventType": "TIMER"
+     "context": {
+          "walkButtonPressed": false,
+          "rightTurnRequested": false
+     },
+     "id": "trafficLight",
+     "initial": "red",
+     "on": {
+          "PRESS_WALK": {}
+     },
+     "states": {
+          "red": {
+               "on": {
+                    "TIMER": {
+                         "target": "green"
+                    },
+                    "PRESS_WALK": {},
+                    "PRESS_RIGHT_TURN": {}
+               },
+               "description": "The traffic light is red. Vehicles must stop, and pedestrians can press the walk button to request a walk signal."
           },
-          {
-            "target": [
-              "#trafficLight.yellow"
-            ],
-            "actions": [],
-            "source": "#trafficLight.green",
-            "reenter": false,
-            "eventType": "TIMER"
+          "green": {
+               "on": {
+                    "TIMER": [
+                         {
+                              "target": "greenArrow"
+                         },
+                         {
+                              "target": "yellow"
+                         }
+                    ]
+               },
+               "description": "The traffic light is green. Vehicles can go straight. If the right turn arrow was requested, it will turn on after the green light."
+          },
+          "greenArrow": {
+               "on": {
+                    "TIMER": {
+                         "target": "yellowArrow"
+                    }
+               },
+               "description": "The right turn arrow is green. Vehicles can make a right turn. The light will turn yellow next."
+          },
+          "yellow": {
+               "on": {
+                    "TIMER": {
+                         "target": "red"
+                    }
+               },
+               "description": "The traffic light is yellow. Vehicles should prepare to stop. The light will turn red next."
+          },
+          "yellowArrow": {
+               "on": {
+                    "TIMER": {
+                         "target": "red"
+                    }
+               },
+               "description": "The right turn arrow is yellow. Vehicles should prepare to stop turning. The light will turn red next."
+          },
+          "walk": {
+               "on": {
+                    "TIMER": {
+                         "target": "stop_now"
+                    }
+               },
+               "description": "The pedestrian walk signal is on. Pedestrians can cross. The light will turn to stop next."
+          },
+          "stop_now": {
+               "on": {
+                    "TIMER": {
+                         "target": "red"
+                    }
+               },
+               "description": "The pedestrian stop signal is on. Pedestrians should not cross. The light will turn red next."
           }
-        ]
-      },
-      "transitions": [
-        {
-          "target": [
-            "#trafficLight.greenArrow"
-          ],
-          "actions": [],
-          "source": "#trafficLight.green",
-          "reenter": false,
-          "eventType": "TIMER"
-        },
-        {
-          "target": [
-            "#trafficLight.yellow"
-          ],
-          "actions": [],
-          "source": "#trafficLight.green",
-          "reenter": false,
-          "eventType": "TIMER"
-        }
-      ],
-      "entry": [],
-      "exit": [],
-      "order": 2,
-      "invoke": [],
-      "description": "The traffic light is green. Vehicles can go straight. If the right turn arrow was requested, it will turn on after the green light.",
-      "tags": []
-    },
-    "greenArrow": {
-      "id": "trafficLight.greenArrow",
-      "key": "greenArrow",
-      "type": "atomic",
-      "initial": {
-        "target": [],
-        "source": "#trafficLight.greenArrow",
-        "actions": [],
-        "eventType": null
-      },
-      "history": false,
-      "states": {},
-      "on": {
-        "TIMER": [
-          {
-            "target": [
-              "#trafficLight.yellowArrow"
-            ],
-            "actions": [],
-            "source": "#trafficLight.greenArrow",
-            "reenter": false,
-            "eventType": "TIMER"
-          }
-        ]
-      },
-      "transitions": [
-        {
-          "target": [
-            "#trafficLight.yellowArrow"
-          ],
-          "actions": [],
-          "source": "#trafficLight.greenArrow",
-          "reenter": false,
-          "eventType": "TIMER"
-        }
-      ],
-      "entry": [
-        {
-          "type": "entry"
-        }
-      ],
-      "exit": [],
-      "order": 3,
-      "invoke": [],
-      "description": "The right turn arrow is green. Vehicles can make a right turn. The light will turn yellow next.",
-      "tags": []
-    },
-    "yellow": {
-      "id": "trafficLight.yellow",
-      "key": "yellow",
-      "type": "atomic",
-      "initial": {
-        "target": [],
-        "source": "#trafficLight.yellow",
-        "actions": [],
-        "eventType": null
-      },
-      "history": false,
-      "states": {},
-      "on": {
-        "TIMER": [
-          {
-            "target": [
-              "#trafficLight.red"
-            ],
-            "actions": [],
-            "source": "#trafficLight.yellow",
-            "reenter": false,
-            "eventType": "TIMER"
-          }
-        ]
-      },
-      "transitions": [
-        {
-          "target": [
-            "#trafficLight.red"
-          ],
-          "actions": [],
-          "source": "#trafficLight.yellow",
-          "reenter": false,
-          "eventType": "TIMER"
-        }
-      ],
-      "entry": [],
-      "exit": [],
-      "order": 4,
-      "invoke": [],
-      "description": "The traffic light is yellow. Vehicles should prepare to stop. The light will turn red next.",
-      "tags": []
-    },
-    "yellowArrow": {
-      "id": "trafficLight.yellowArrow",
-      "key": "yellowArrow",
-      "type": "atomic",
-      "initial": {
-        "target": [],
-        "source": "#trafficLight.yellowArrow",
-        "actions": [],
-        "eventType": null
-      },
-      "history": false,
-      "states": {},
-      "on": {
-        "TIMER": [
-          {
-            "target": [
-              "#trafficLight.red"
-            ],
-            "actions": [],
-            "source": "#trafficLight.yellowArrow",
-            "reenter": false,
-            "eventType": "TIMER"
-          }
-        ]
-      },
-      "transitions": [
-        {
-          "target": [
-            "#trafficLight.red"
-          ],
-          "actions": [],
-          "source": "#trafficLight.yellowArrow",
-          "reenter": false,
-          "eventType": "TIMER"
-        }
-      ],
-      "entry": [],
-      "exit": [],
-      "order": 5,
-      "invoke": [],
-      "description": "The right turn arrow is yellow. Vehicles should prepare to stop turning. The light will turn red next.",
-      "tags": []
-    },
-    "walk": {
-      "id": "trafficLight.walk",
-      "key": "walk",
-      "type": "atomic",
-      "initial": {
-        "target": [],
-        "source": "#trafficLight.walk",
-        "actions": [],
-        "eventType": null
-      },
-      "history": false,
-      "states": {},
-      "on": {
-        "TIMER": [
-          {
-            "target": [
-              "#trafficLight.stop"
-            ],
-            "actions": [],
-            "source": "#trafficLight.walk",
-            "reenter": false,
-            "eventType": "TIMER"
-          }
-        ]
-      },
-      "transitions": [
-        {
-          "target": [
-            "#trafficLight.stop"
-          ],
-          "actions": [],
-          "source": "#trafficLight.walk",
-          "reenter": false,
-          "eventType": "TIMER"
-        }
-      ],
-      "entry": [],
-      "exit": [],
-      "order": 6,
-      "invoke": [],
-      "description": "The pedestrian walk signal is on. Pedestrians can cross. The light will turn to stop next.",
-      "tags": []
-    },
-    "stop": {
-      "id": "trafficLight.stop",
-      "key": "stop",
-      "type": "atomic",
-      "initial": {
-        "target": [],
-        "source": "#trafficLight.stop",
-        "actions": [],
-        "eventType": null
-      },
-      "history": false,
-      "states": {},
-      "on": {
-        "TIMER": [
-          {
-            "target": [
-              "#trafficLight.red"
-            ],
-            "actions": [],
-            "source": "#trafficLight.stop",
-            "reenter": false,
-            "eventType": "TIMER"
-          }
-        ]
-      },
-      "transitions": [
-        {
-          "target": [
-            "#trafficLight.red"
-          ],
-          "actions": [],
-          "source": "#trafficLight.stop",
-          "reenter": false,
-          "eventType": "TIMER"
-        }
-      ],
-      "entry": [],
-      "exit": [],
-      "order": 7,
-      "invoke": [],
-      "description": "The pedestrian stop signal is on. Pedestrians should not cross. The light will turn red next.",
-      "tags": []
-    }
-  },
-  "on": {
-    "PRESS_WALK": [
-      {
-        "actions": [
-          null
-        ],
-        "source": "#trafficLight",
-        "reenter": false,
-        "eventType": "PRESS_WALK"
-      }
-    ]
-  },
-  "transitions": [
-    {
-      "actions": [
-        null
-      ],
-      "source": "#trafficLight",
-      "reenter": false,
-      "eventType": "PRESS_WALK"
-    }
-  ],
-  "entry": [],
-  "exit": [],
-  "order": -1,
-  "invoke": [],
-  "tags": []
+     }
 }
