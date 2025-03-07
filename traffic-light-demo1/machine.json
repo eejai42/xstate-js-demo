@@ -14,7 +14,7 @@
                     "TIMER": {
                          "target": "green"
                     },
-                    "PRESS_WALK": {},
+                    "PRESS_WALK_BUTTON": {},
                     "PRESS_RIGHT_TURN": {}
                },
                "description": "The traffic light is red. Vehicles must stop, and pedestrians can press the walk button to request a walk signal."
@@ -65,12 +65,16 @@
                "description": "The pedestrian walk signal is on. Pedestrians can cross. The light will turn to stop next."
           },
           "stop": {
+               "initial": "New state 1",
                "on": {
                     "TIMER": {
                          "target": "red"
                     }
                },
-               "description": "The pedestrian stop signal is on. Pedestrians should not cross. The light will turn red next."
+               "description": "The pedestrian stop signal is on. Pedestrians should not cross. The light will turn red next.",
+               "states": {
+                    "New state 1": {}
+               }
           }
      }
 }

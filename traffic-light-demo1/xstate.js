@@ -18,7 +18,7 @@ export const machine = createMachine({
         TIMER: {
           target: "green",
         },
-        PRESS_WALK: {
+        PRESS_WALK_BUTTON: {
           actions: (context) => (context.walkButtonPressed = true),
         },
         PRESS_RIGHT_TURN: {
@@ -81,6 +81,7 @@ export const machine = createMachine({
         "The pedestrian walk signal is on. Pedestrians can cross. The light will turn to stop next.",
     },
     stop: {
+      initial: "New state 1",
       on: {
         TIMER: {
           target: "red",
@@ -88,6 +89,9 @@ export const machine = createMachine({
       },
       description:
         "The pedestrian stop signal is on. Pedestrians should not cross. The light will turn red next.",
+      states: {
+        "New state 1": {},
+      },
     },
   },
 }).withConfig({

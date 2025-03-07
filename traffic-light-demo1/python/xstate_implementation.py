@@ -7,8 +7,8 @@ class XStateHandler(TrafficLightBase):
     def red_TIMER(self):
         print("Default handler: red_TIMER invoked.")
 
-    def red_PRESS_WALK(self):
-        print("Default handler: red_PRESS_WALK invoked.")
+    def red_PRESS_WALK_BUTTON(self):
+        print("Default handler: red_PRESS_WALK_BUTTON invoked.")
 
     def red_PRESS_RIGHT_TURN(self):
         print("Default handler: red_PRESS_RIGHT_TURN invoked.")

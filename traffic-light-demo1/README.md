@@ -5,7 +5,7 @@ State "red":
   - Transitions:
     - On event "TIMER":
         → "green" 
-    - On event "PRESS_WALK":
+    - On event "PRESS_WALK_BUTTON":
         → "" 
     - On event "PRESS_RIGHT_TURN":
         → "" 

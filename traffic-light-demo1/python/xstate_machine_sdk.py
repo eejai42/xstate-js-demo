@@ -17,8 +17,8 @@ class TrafficLightBase:
     def red_TIMER(self):
         raise NotImplementedError("red_TIMER is not implemented.")
 
-    def red_PRESS_WALK(self):
-        raise NotImplementedError("red_PRESS_WALK is not implemented.")
+    def red_PRESS_WALK_BUTTON(self):
+        raise NotImplementedError("red_PRESS_WALK_BUTTON is not implemented.")
 
     def red_PRESS_RIGHT_TURN(self):
         raise NotImplementedError("red_PRESS_RIGHT_TURN is not implemented.")
