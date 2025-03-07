@@ -18,7 +18,7 @@ export const machine = createMachine({
         TIMER: {
           target: "green",
         },
-        PRESS_WALK: {
+        PRESS_WALK_BUTTON: {
           actions: (context) => (context.walkButtonPressed = true),
         },
         PRESS_RIGHT_TURN: {
