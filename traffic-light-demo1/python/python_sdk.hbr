@@ -1,0 +1,61 @@
+[[FileSetFile/RelativePath[./xstate_machine_sdk.py]]]
+class TrafficLightBase:
+    def __init__(self):
+        self.context = {
+{{#each context}}
+            "{{@key}}": {{this}},
+{{/each}}
+        }
+        self.state = "{{initial}}"
+
+    def handle_event(self, event):
+        handler_name = f"{self.state}_{event}"
+        handler = getattr(self, handler_name, None)
+        if handler:
+            handler()
+        else:
+            raise ValueError(f"Event '{event}' not handled in state '{self.state}'")
+
+{{#each states}}
+{{#with on}}
+{{#each this}}
+    def {{@../key}}_{{@key}}(self):
+        raise NotImplementedError("{{@../key}}_{{@key}} is not implemented.")
+
+{{/each}}
+{{/with}}
+{{/each}}
+
+[[FileSetFile/RelativePath[./xstate_implementation.py:Never]]]
+from xstate_machine_sdk import TrafficLightBase
+
+class XStateHandler(TrafficLightBase):
+    def __init__(self):
+        super().__init__()
+
+{{#each states}}
+{{#with on}}
+{{#each this}}
+    def {{@../key}}_{{@key}}(self):
+        print("Default handler: {{@../key}}_{{@key}} invoked.")
+
+{{/each}}
+{{/with}}
+{{/each}}
+
+[[FileSetFile/RelativePath[./main.py:Never]]]
+from time import sleep
+from xstate_implementation import XStateHandler
+
+def main():
+    machine = XStateHandler()
+    print(f"Initial State: {machine.state}")
+
+    events = ["TIMER", "PRESS_WALK", "PRESS_RIGHT_TURN", "TIMER", "TIMER"]
+    for event in events:
+        print(f"\nSending event: {event}")
+        machine.handle_event(event)
+        sleep(3)
+
+if __name__ == "__main__":
+    main()

@@ -18,6 +18,16 @@
       "Name": "JsonHbarsTransform",
       "RelativePath": "/traffic-light-demo1/docs",
       "CommandLine": "json-hbars-transform -i ..\\machine.json -i ..\\..\\hbars\\make-docs.hbr -o ../README.md"
+    },
+    {
+      "MatchedTranspiler": {
+        "Name": "JsonHbarsTransform",
+        "Description": "Json-Hbars-Transform"
+      },
+      "IsSSoTTranspiler": false,
+      "Name": "JsonHbarsTransform",
+      "RelativePath": "/traffic-light-demo1/python",
+      "CommandLine": "json-hbars-transform -i ../machine.json -i .\\python_sdk.hbr"
     }
   ]
 }

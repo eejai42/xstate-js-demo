@@ -74,13 +74,13 @@ export const machine = createMachine({
     walk: {
       on: {
         TIMER: {
-          target: "stop_now_ish",
+          target: "stop",
         },
       },
       description:
         "The pedestrian walk signal is on. Pedestrians can cross. The light will turn to stop next.",
     },
-    stop_now_ish: {
+    stop: {
       on: {
         TIMER: {
           target: "red",
