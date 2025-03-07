@@ -39,9 +39,9 @@ State "walk":
   - The pedestrian walk signal is on. Pedestrians can cross. The light will turn to stop next.
   - Transitions:
     - On event "TIMER":
-        → "stop_now" 
+        → "stop_now_ish" 
 
-State "stop_now":
+State "stop_now_ish":
   - The pedestrian stop signal is on. Pedestrians should not cross. The light will turn red next.
   - Transitions:
     - On event "TIMER":
