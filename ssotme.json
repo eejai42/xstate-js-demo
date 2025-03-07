@@ -1,0 +1,23 @@
+{
+  "ShowHidden": false,
+  "ShowAllFiles": false,
+  "Name": "xstate-js-demo",
+  "ProjectSettings": [
+    {
+      "Name": "project-name",
+      "Value": "xstate-js-demo"
+    }
+  ],
+  "ProjectTranspilers": [
+    {
+      "MatchedTranspiler": {
+        "Name": "JsonHbarsTransform",
+        "Description": "Json-Hbars-Transform"
+      },
+      "IsSSoTTranspiler": false,
+      "Name": "JsonHbarsTransform",
+      "RelativePath": "/traffic-light-demo1/docs",
+      "CommandLine": "json-hbars-transform -i ..\\machine.json -i ..\\..\\hbars\\make-docs.hbr -o ../README.md"
+    }
+  ]
+}

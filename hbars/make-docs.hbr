@@ -1,0 +1,28 @@
+State Machine "{{id}}" has the initial state "{{initial}}".
+
+{{#each states}}
+State "{{@key}}":
+  {{#if description}}
+  - {{description}}
+  {{/if}}
+  {{#if on}}
+  - Transitions:
+    {{#each on}}
+    - On event "{{@key}}":
+      {{#if (isArray this)}}
+        {{#each this}}
+          → "{{target}}" {{#if cond}}(if "{{cond}}"){{/if}}
+        {{/each}}
+      {{else}}
+        → "{{target}}" {{#if cond}}(if "{{cond}}"){{/if}}
+      {{/if}}
+    {{/each}}
+  {{/if}}
+  {{#if entry}}
+  - Entry Actions: {{entry}}
+  {{/if}}
+  {{#if exit}}
+  - Exit Actions: {{exit}}
+  {{/if}}
+
+{{/each}}
