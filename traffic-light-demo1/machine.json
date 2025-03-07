@@ -36,14 +36,14 @@
             "eventType": "TIMER"
           }
         ],
-        "PRESS_WALK_BUTTON": [
+        "PRESS_WALK": [
           {
             "actions": [
               null
             ],
             "source": "#trafficLight.red",
             "reenter": false,
-            "eventType": "PRESS_WALK_BUTTON"
+            "eventType": "PRESS_WALK"
           }
         ],
         "PRESS_RIGHT_TURN": [
@@ -73,7 +73,7 @@
           ],
           "source": "#trafficLight.red",
           "reenter": false,
-          "eventType": "PRESS_WALK_BUTTON"
+          "eventType": "PRESS_WALK"
         },
         {
           "actions": [

@@ -1,2 +1,3 @@
-node traffif-light-demo1/export.msj
-ssotme -build
+cd traffif-light-demo1
+node ./export.msj
+ssotme -buildall
