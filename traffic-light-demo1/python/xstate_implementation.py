@@ -4,6 +4,9 @@ class XStateHandler(TrafficLightBase):
     def __init__(self):
         super().__init__()
 
+    def red_PRESS_WALK(self):    
+        print("this is the new handler")
+
     def red_TIMER(self):
         print("Default handler: red_TIMER invoked.")
 

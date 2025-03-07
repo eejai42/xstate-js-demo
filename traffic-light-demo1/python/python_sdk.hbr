@@ -3,7 +3,7 @@ class TrafficLightBase:
     def __init__(self):
         self.context = {
 {{#each context}}
-            "{{@key}}": {{this}},
+           "{{@key}}": {{#if this}}True{{else}}False{{/if}},
 {{/each}}
         }
         self.state = "{{initial}}"
