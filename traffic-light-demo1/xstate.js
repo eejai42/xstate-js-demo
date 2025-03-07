@@ -76,6 +76,12 @@ export const machine = createMachine({
         TIMER: {
           target: "stop",
         },
+        Event2: {
+          target: "yellow",
+          guard: {
+            type: "New guard",
+          },
+        },
       },
       description:
         "The pedestrian walk signal is on. Pedestrians can cross. The light will turn to stop next.",
@@ -95,5 +101,10 @@ export const machine = createMachine({
     },
   },
 }).withConfig({
-  guards: {},
+  guards: {
+    "New guard": function (context, event) {
+      // Add your guard condition here
+      return true;
+    },
+  },
 });

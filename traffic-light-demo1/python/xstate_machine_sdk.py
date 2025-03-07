@@ -38,5 +38,8 @@ class TrafficLightBase:
     def walk_TIMER(self):
         raise NotImplementedError("walk_TIMER is not implemented.")
 
+    def walk_Event2(self):
+        raise NotImplementedError("walk_Event2 is not implemented.")
+
     def stop_TIMER(self):
         raise NotImplementedError("stop_TIMER is not implemented.")

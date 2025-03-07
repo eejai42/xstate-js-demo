@@ -4,6 +4,9 @@ class XStateHandler(TrafficLightBase):
     def __init__(self):
         super().__init__()
 
+    def red_Event2(self):
+        print("this is a new one")
+
     def red_PRESS_WALK(self):    
         print("this is the new handler")
 

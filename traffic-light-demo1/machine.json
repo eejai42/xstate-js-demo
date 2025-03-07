@@ -60,6 +60,12 @@
                "on": {
                     "TIMER": {
                          "target": "stop"
+                    },
+                    "Event2": {
+                         "target": "yellow",
+                         "guard": {
+                              "type": "New guard"
+                         }
                     }
                },
                "description": "The pedestrian walk signal is on. Pedestrians can cross. The light will turn to stop next."

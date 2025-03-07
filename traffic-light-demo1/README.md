@@ -40,6 +40,8 @@ State "walk":
   - Transitions:
     - On event "TIMER":
         → "stop" 
+    - On event "Event2":
+        → "yellow" 
 
 State "stop":
   - The pedestrian stop signal is on. Pedestrians should not cross. The light will turn red next.
