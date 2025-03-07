@@ -1,8 +1,8 @@
 class TrafficLightBase:
     def __init__(self):
         self.context = {
-            "walkButtonPressed": false,
-            "rightTurnRequested": false,
+            "walkButtonPressed": False,
+            "rightTurnRequested": False,
         }
         self.state = "red"
 

@@ -1,4 +1,3 @@
-# :never means this file will never get overwritten after it is changed.
 from xstate_machine_sdk import TrafficLightBase
 
 class XStateHandler(TrafficLightBase):

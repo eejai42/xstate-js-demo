@@ -1,4 +1,4 @@
-import time
+from time import sleep
 from xstate_implementation import XStateHandler
 
 def main():
@@ -9,7 +9,7 @@ def main():
     for event in events:
         print(f"\nSending event: {event}")
         machine.handle_event(event)
-        time.sleep(3)
+        sleep(3)
 
 if __name__ == "__main__":
     main()
