@@ -21,6 +21,7 @@ class XStateHandler(TrafficLightBase):
 
     def red_TIMER(self):
         print("Default handler: red_TIMER invoked.")
+        self.handle_event("PRESS_WALK")
 
     def red_PRESS_WALK(self):
         print("Default handler: red_PRESS_WALK invoked.")

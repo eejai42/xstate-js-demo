@@ -1,4 +1,4 @@
-State Machine "{{id}}" has the initial state "{{initial}}".
+This State Machine, named "{{id}}" has the initial state "{{initial}}".
 
 {{#each states}}
 State "{{@key}}":

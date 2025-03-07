@@ -5,6 +5,8 @@ def main():
     machine = XStateHandler()
     print(f"Initial State: {machine.state}")
 
+    machine.handle_event("TIMER")
+
     events = ["TIMER", "EMERGENCY_STOP", "PRESS_RIGHT_TURN", "TIMER", "TIMER"]
     for event in events:
         print(f"\nSending event: {event}")

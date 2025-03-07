@@ -1,4 +1,4 @@
-State Machine "trafficLight" has the initial state "walk".
+This State Machine, named "trafficLight" has the initial state "walk".
 
 State "walk":
   - The pedestrian walk signal is on. Pedestrians can cross. The light will turn to stop next.
