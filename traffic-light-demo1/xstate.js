@@ -18,7 +18,8 @@ export const machine = createMachine({
         TIMER: {
           target: "green",
         },
-        PRESS_WALK_BUTTON: {
+        PRESS_WALK_BTN: {
+          target: "yellow",
           actions: (context) => (context.walkButtonPressed = true),
         },
         PRESS_RIGHT_TURN: {
@@ -43,6 +44,15 @@ export const machine = createMachine({
       description:
         "The traffic light is green. Vehicles can go straight. If the right turn arrow was requested, it will turn on after the green light.",
     },
+    yellow: {
+      on: {
+        TIMER: {
+          target: "red",
+        },
+      },
+      description:
+        "The traffic light is yellow. Vehicles should prepare to stop. The light will turn red next.",
+    },
     greenArrow: {
       on: {
         TIMER: {
@@ -52,15 +62,6 @@ export const machine = createMachine({
       entry: (context) => (context.rightTurnRequested = false),
       description:
         "The right turn arrow is green. Vehicles can make a right turn. The light will turn yellow next.",
-    },
-    yellow: {
-      on: {
-        TIMER: {
-          target: "red",
-        },
-      },
-      description:
-        "The traffic light is yellow. Vehicles should prepare to stop. The light will turn red next.",
     },
     yellowArrow: {
       on: {

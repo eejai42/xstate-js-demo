@@ -5,8 +5,8 @@ State "red":
   - Transitions:
     - On event "TIMER":
         → "green" 
-    - On event "PRESS_WALK_BUTTON":
-        → "" 
+    - On event "PRESS_WALK_BTN":
+        → "yellow" 
     - On event "PRESS_RIGHT_TURN":
         → "" 
 
@@ -17,17 +17,17 @@ State "green":
           → "greenArrow" 
           → "yellow" 
 
-State "greenArrow":
-  - The right turn arrow is green. Vehicles can make a right turn. The light will turn yellow next.
-  - Transitions:
-    - On event "TIMER":
-        → "yellowArrow" 
-
 State "yellow":
   - The traffic light is yellow. Vehicles should prepare to stop. The light will turn red next.
   - Transitions:
     - On event "TIMER":
         → "red" 
+
+State "greenArrow":
+  - The right turn arrow is green. Vehicles can make a right turn. The light will turn yellow next.
+  - Transitions:
+    - On event "TIMER":
+        → "yellowArrow" 
 
 State "yellowArrow":
   - The right turn arrow is yellow. Vehicles should prepare to stop turning. The light will turn red next.

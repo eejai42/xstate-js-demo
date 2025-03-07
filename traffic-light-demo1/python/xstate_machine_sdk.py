@@ -17,8 +17,8 @@ class TrafficLightBase:
     def red_TIMER(self):
         raise NotImplementedError("red_TIMER is not implemented.")
 
-    def red_PRESS_WALK_BUTTON(self):
-        raise NotImplementedError("red_PRESS_WALK_BUTTON is not implemented.")
+    def red_PRESS_WALK_BTN(self):
+        raise NotImplementedError("red_PRESS_WALK_BTN is not implemented.")
 
     def red_PRESS_RIGHT_TURN(self):
         raise NotImplementedError("red_PRESS_RIGHT_TURN is not implemented.")
@@ -26,11 +26,11 @@ class TrafficLightBase:
     def green_TIMER(self):
         raise NotImplementedError("green_TIMER is not implemented.")
 
-    def greenArrow_TIMER(self):
-        raise NotImplementedError("greenArrow_TIMER is not implemented.")
-
     def yellow_TIMER(self):
         raise NotImplementedError("yellow_TIMER is not implemented.")
+
+    def greenArrow_TIMER(self):
+        raise NotImplementedError("greenArrow_TIMER is not implemented.")
 
     def yellowArrow_TIMER(self):
         raise NotImplementedError("yellowArrow_TIMER is not implemented.")
