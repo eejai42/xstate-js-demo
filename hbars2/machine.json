@@ -1,0 +1,158 @@
+{
+  "id": "expanded-traffic-system",
+  "type": "parallel",
+  "description": "Parallel traffic + pedestrian machine with an inline timer service.",
+  "context": {
+  "counter": 0,
+  "NightProfile": false
+},
+  "states": {
+    "trafficOps": {
+      "id": "expanded-traffic-system.trafficOps",
+      "description": "Controls main traffic lights, uses an invoked timer service."
+      , "initial": "green"
+      ,
+      "invoke": [
+        {
+          "id": "expanded-traffic-system.trafficOps:invocation[0]",
+          "src": "timerService"
+        }
+      ]
+      ,
+      "states": {
+        "green": {
+          "description": "Green light. Eventually transitions to orange.",
+          "entry": [
+            "logEnterGreen"
+          ],
+          "exit": [
+            "logExitGreen"
+          ]
+        },
+        "orange": {
+          "description": "Orange (amber) light. After a short delay, transitions to red."
+        },
+        "red": {
+          "description": "Red light. Transitions to green if 'NightProfile' is active and vehicleSensor is triggered, or after a timer."
+        },
+        "H": {
+          "type": "history",
+          "history": "shallow"
+        },
+        "Flashing Redish": {
+          "description": "Error mode. On systemReset, returns to last known sub-state via 'H'."
+        },
+        "finished": {
+          "description": "Traffic operations complete.",
+          "type": "final"
+        }
+      }
+    },
+    "pedestrianOps": {
+      "id": "expanded-traffic-system.pedestrianOps",
+      "description": "Cycles between 'walk' and 'dontWalk' signals on a delay."
+      , "initial": "walk"
+      ,
+      "states": {
+        "walk": {
+        },
+        "dontWalk": {
+        }
+      }
+    }
+  },
+  "implementations": {
+    "guards": {
+      "isCounterReached": {
+        "id": "isCounterReached",
+        "name": "isCounterReached"
+      },
+      "isNightProfile": {
+        "id": "isNightProfile",
+        "name": "isNightProfile"
+      }
+    },
+    "actions": {
+      "logEnterGreen": {
+        "id": "logEnterGreen",
+        "name": "logEnterGreen",
+        "schema": {
+  "type": "object",
+  "properties": {}
+}
+      },
+      "logExitGreen": {
+        "id": "logExitGreen",
+        "name": "logExitGreen",
+        "schema": {
+  "type": "object",
+  "properties": {}
+}
+      },
+      "incrementCounter": {
+        "id": "incrementCounter",
+        "name": "incrementCounter",
+        "schema": {
+  "type": "object",
+  "properties": {}
+}
+      },
+      "doThisThatOrTheOther": {
+        "id": "doThisThatOrTheOther",
+        "name": "doThisThatOrTheOther",
+        "schema": {
+  "type": "object",
+  "properties": {
+    "test": 42
+  }
+}
+      }
+    },
+    "actors": {
+      "timerService": {
+        "id": "timerService",
+        "name": "expanded-traffic-system.trafficOps:invocation[0]",
+        "input": {
+  "type": "object",
+  "properties": {}
+},
+        "output": {
+  "type": "object",
+  "properties": {}
+}
+      }
+    }
+  },
+  "schemas": {
+    "events": {
+      "done": {
+        "properties": {
+        }
+      },
+      "terminate": {
+        "properties": {
+        }
+      },
+      "Error": {
+        "properties": {
+        }
+      },
+      "TICK": {
+        "properties": {
+        }
+      },
+      "redTimerExpired": {
+        "properties": {
+        }
+      },
+      "vehicleSensor": {
+        "properties": {
+        }
+      },
+      "systemReset": {
+        "properties": {
+        }
+      }
+    }
+  }
+}

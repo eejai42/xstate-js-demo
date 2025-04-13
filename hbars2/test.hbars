@@ -1,0 +1,189 @@
+{{!-- 
+  A Handlebars template to generate a README.md that describes
+  an xstate-like state machine from a comprehensive JSON model.
+  
+  Usage:
+  1) Provide the JSON model as the template input/context.
+  2) This template will output a Markdown document describing
+     the machine's structure, states, events, context, and more.
+--}}
+
+# {{id}}
+
+{{#if rootNode.data.description}}
+**Description**: {{rootNode.data.description}}
+{{/if}}
+
+---
+
+## Top-Level Context
+
+{{#each context}}
+- **{{@key}}**: `{{this}}`
+{{/each}}
+
+---
+
+## States Overview
+
+{{!-- Recursively list states. We only use simple loops and conditionals. --}}
+
+{{#each rootNode.nodes}}
+### State: **{{data.key}}**
+
+{{#if data.type}}
+- **Type**: {{data.type}}
+{{/if}}
+
+{{#if data.description}}
+- **Description**: {{data.description}}
+{{/if}}
+
+{{#if data.initial}}
+- **Initial Sub-state**: {{data.initial}}
+{{/if}}
+
+{{#if data.history}}
+- **History Type**: {{data.history}}
+{{/if}}
+
+{{#if data.entry}}
+- **On Entry**:
+  {{#each data.entry}}
+  - **Action**: {{action.type}}
+  {{/each}}
+{{/if}}
+
+{{#if data.exit}}
+- **On Exit**:
+  {{#each data.exit}}
+  - **Action**: {{action.type}}
+  {{/each}}
+{{/if}}
+
+{{#if data.invoke}}
+- **Invoked Actors**:
+  {{#each data.invoke}}
+  - **Source**: {{src}}
+  {{/each}}
+{{/if}}
+
+{{#if nodes}}
+#### Child States of {{data.key}}
+{{#each nodes}}
+- **Key**: {{data.key}}
+  {{#if data.type}}(type: {{data.type}}){{/if}}
+  {{#if data.description}}
+  - Description: {{data.description}}
+  {{/if}}
+  {{#if data.entry}}
+  - On Entry:
+    {{#each data.entry}}
+    - Action: {{action.type}}
+    {{/each}}
+  {{/if}}
+  {{#if data.exit}}
+  - On Exit:
+    {{#each data.exit}}
+    - Action: {{action.type}}
+    {{/each}}
+  {{/if}}
+{{/each}}
+{{/if}}
+
+---
+{{/each}}
+
+## Transitions
+
+{{#each edges}}
+- **Source**: `{{source}}` => **Target**: `{{target}}`
+  - **Event**: 
+    {{#if data.eventTypeData.type}}
+      {{data.eventTypeData.type}}
+      {{#if data.eventTypeData.delay}}
+        (delay = `{{data.eventTypeData.delay}}`)
+      {{/if}}
+      {{#if data.eventTypeData.eventType}}
+        (eventType = `{{data.eventTypeData.eventType}}`)
+      {{/if}}
+    {{/if}}
+  {{#if data.guard}}
+  - **Guard**: `{{data.guard.type}}`
+  {{/if}}
+  {{#if data.actions}}
+  - **Actions**:
+    {{#each data.actions}}
+    - `{{action.type}}`
+    {{/each}}
+  {{/if}}
+
+{{/each}}
+
+---
+
+## Schemas
+
+{{#if schemas.events}}
+### Event Schemas
+{{#each schemas.events}}
+- **{{@key}}**: 
+  {{#if this.properties}}
+  Properties:
+    {{#each this.properties}}
+    - `{{@key}}`
+    {{/each}}
+  {{else}}
+  *(No additional properties)*
+  {{/if}}
+{{/each}}
+{{/if}}
+
+---
+
+## Implementations
+
+{{#if implementations.guards}}
+### Guards
+{{#each implementations.guards}}
+- **{{@key}}**:
+  - ID: {{id}}
+  - Name: {{name}}
+{{/each}}
+{{/if}}
+
+{{#if implementations.actions}}
+### Actions
+{{#each implementations.actions}}
+- **{{@key}}**:
+  - ID: {{id}}
+  - Name: {{name}}
+  {{#if schema.properties}}
+  - Schema properties:
+    {{#each schema.properties}}
+    - `{{@key}}: {{this}}`
+    {{/each}}
+  {{/if}}
+{{/each}}
+{{/if}}
+
+{{#if implementations.actors}}
+### Actors
+{{#each implementations.actors}}
+- **{{@key}}**:
+  - ID: {{id}}
+  - Name: {{name}}
+  {{#if input.properties}}
+  - **Input**:
+    {{#each input.properties}}
+    - `{{@key}}`
+    {{/each}}
+  {{/if}}
+  {{#if output.properties}}
+  - **Output**:
+    {{#each output.properties}}
+    - `{{@key}}`
+    {{/each}}
+  {{/if}}
+{{/each}}
+{{/if}}

@@ -1,0 +1,800 @@
+{
+    "id": "d02a71c7-6c5f-4031-8435-1cab04f2ee74",
+    "rootNode": {
+      "id": "expanded-traffic-system",
+      "uniqueId": "52dzq6tluoq",
+      "nodes": [
+        {
+          "id": "expanded-traffic-system.trafficOps",
+          "uniqueId": "s0u33dehbc9",
+          "nodes": [
+            {
+              "id": "expanded-traffic-system.trafficOps.green",
+              "uniqueId": "s1yytrynmcf",
+              "nodes": [],
+              "position": {
+                "x": 108,
+                "y": 766
+              },
+              "data": {
+                "key": "green",
+                "entry": [
+                  {
+                    "kind": "named",
+                    "action": {
+                      "type": "logEnterGreen",
+                      "params": {}
+                    }
+                  }
+                ],
+                "exit": [
+                  {
+                    "kind": "named",
+                    "action": {
+                      "type": "logExitGreen",
+                      "params": {}
+                    }
+                  }
+                ],
+                "description": "Green light. Eventually transitions to orange.",
+                "invoke": [],
+                "tags": [],
+                "assets": []
+              },
+              "size": {
+                "width": 358,
+                "height": 161
+              }
+            },
+            {
+              "id": "expanded-traffic-system.trafficOps.orange",
+              "uniqueId": "vdi6i9hvxo",
+              "nodes": [],
+              "position": {
+                "x": 830,
+                "y": 664
+              },
+              "data": {
+                "key": "orange",
+                "entry": [],
+                "exit": [],
+                "description": "Orange (amber) light. After a short delay, transitions to red.",
+                "invoke": [],
+                "tags": [],
+                "assets": []
+              },
+              "size": {
+                "width": 398,
+                "height": 87
+              }
+            },
+            {
+              "id": "expanded-traffic-system.trafficOps.red",
+              "uniqueId": "okjexvseih",
+              "nodes": [],
+              "position": {
+                "x": 2217,
+                "y": 457
+              },
+              "data": {
+                "key": "red",
+                "entry": [],
+                "exit": [],
+                "description": "Red light. Transitions to green if 'NightProfile' is active and vehicleSensor is triggered, or after a timer.",
+                "invoke": [],
+                "tags": [],
+                "assets": []
+              },
+              "size": {
+                "width": 656,
+                "height": 87
+              }
+            },
+            {
+              "id": "expanded-traffic-system.trafficOps.H",
+              "uniqueId": "vlc7zt7tjbe",
+              "nodes": [],
+              "position": {
+                "x": 2217,
+                "y": 995
+              },
+              "data": {
+                "key": "H",
+                "entry": [],
+                "exit": [],
+                "invoke": [],
+                "tags": [],
+                "history": "shallow",
+                "type": "history",
+                "assets": []
+              },
+              "size": {
+                "width": 114,
+                "height": 43
+              }
+            },
+            {
+              "id": "expanded-traffic-system.trafficOps.Flashing Redish",
+              "uniqueId": "5kxhzkz68eo",
+              "nodes": [],
+              "position": {
+                "x": 1527,
+                "y": 897
+              },
+              "data": {
+                "key": "Flashing Redish",
+                "entry": [],
+                "exit": [],
+                "description": "Error mode. On systemReset, returns to last known sub-state via 'H'.",
+                "invoke": [],
+                "tags": [],
+                "assets": []
+              },
+              "size": {
+                "width": 453,
+                "height": 87
+              }
+            },
+            {
+              "id": "expanded-traffic-system.trafficOps.finished",
+              "uniqueId": "nw3vqb0z3h",
+              "nodes": [],
+              "position": {
+                "x": 1609,
+                "y": 759
+              },
+              "data": {
+                "key": "finished",
+                "entry": [],
+                "exit": [],
+                "description": "Traffic operations complete.",
+                "invoke": [],
+                "tags": [],
+                "type": "final",
+                "assets": []
+              },
+              "size": {
+                "width": 207,
+                "height": 88
+              }
+            }
+          ],
+          "position": {
+            "x": 60,
+            "y": 207
+          },
+          "data": {
+            "key": "trafficOps",
+            "entry": [],
+            "exit": [],
+            "description": "Controls main traffic lights, uses an invoked timer service.",
+            "invoke": [
+              {
+                "input": {},
+                "src": "timerService",
+                "id": "expanded-traffic-system.trafficOps:invocation[0]",
+                "kind": "named",
+                "settings": {}
+              }
+            ],
+            "tags": [],
+            "initial": "green",
+            "assets": []
+          },
+          "size": {
+            "width": 2861,
+            "height": 185
+          }
+        },
+        {
+          "id": "expanded-traffic-system.pedestrianOps",
+          "uniqueId": "lcuwvrsjs4i",
+          "nodes": [
+            {
+              "id": "expanded-traffic-system.pedestrianOps.walk",
+              "uniqueId": "z7rwp2l4xdg",
+              "nodes": [],
+              "position": {
+                "x": 1252,
+                "y": 1482
+              },
+              "data": {
+                "key": "walk",
+                "entry": [],
+                "exit": [],
+                "invoke": [],
+                "tags": [],
+                "assets": []
+              },
+              "size": {
+                "width": 78,
+                "height": 42
+              }
+            },
+            {
+              "id": "expanded-traffic-system.pedestrianOps.dontWalk",
+              "uniqueId": "dd1e6r3so5d",
+              "nodes": [],
+              "position": {
+                "x": 1631,
+                "y": 1482
+              },
+              "data": {
+                "key": "dontWalk",
+                "entry": [],
+                "exit": [],
+                "invoke": [],
+                "tags": [],
+                "assets": []
+              },
+              "size": {
+                "width": 99,
+                "height": 42
+              }
+            }
+          ],
+          "position": {
+            "x": 1204,
+            "y": 1333
+          },
+          "data": {
+            "key": "pedestrianOps",
+            "entry": [],
+            "exit": [],
+            "description": "Cycles between 'walk' and 'dontWalk' signals on a delay.",
+            "invoke": [],
+            "tags": [],
+            "initial": "walk",
+            "assets": []
+          },
+          "size": {
+            "width": 574,
+            "height": 87
+          }
+        }
+      ],
+      "position": {
+        "x": 12,
+        "y": 4
+      },
+      "data": {
+        "key": "expanded-traffic-system",
+        "entry": [],
+        "exit": [],
+        "description": "Parallel traffic + pedestrian machine with an inline timer service.",
+        "invoke": [],
+        "tags": [],
+        "type": "parallel",
+        "assets": []
+      },
+      "size": {
+        "width": 2965,
+        "height": 155
+      }
+    },
+    "schemas": {
+      "events": {
+        "done": {
+          "type": "object",
+          "properties": {}
+        },
+        "terminate": {
+          "type": "object",
+          "properties": {}
+        },
+        "Error": {
+          "type": "object",
+          "properties": {}
+        },
+        "TICK": {
+          "type": "object",
+          "properties": {}
+        },
+        "redTimerExpired": {
+          "type": "object",
+          "properties": {}
+        },
+        "vehicleSensor": {
+          "type": "object",
+          "properties": {}
+        },
+        "systemReset": {
+          "type": "object",
+          "properties": {}
+        }
+      },
+      "tags": {},
+      "actions": {},
+      "actors": {},
+      "delays": {},
+      "guards": {},
+      "input": null,
+      "output": null,
+      "context": {
+        "counter": {
+          "type": "number",
+          "description": "Generated automatically based on the key: \"counter\" in initial context values"
+        },
+        "NightProfile": {
+          "type": "boolean",
+          "description": "Generated automatically based on the key: \"NightProfile\" in initial context values"
+        }
+      }
+    },
+    "context": {
+      "counter": 0,
+      "NightProfile": false
+    },
+    "edges": [
+      {
+        "id": "expanded-traffic-system.trafficOps.green#done[0]",
+        "uniqueId": "j78j8irc4x",
+        "data": {
+          "eventTypeData": {
+            "type": "named",
+            "eventType": "done"
+          },
+          "actions": []
+        },
+        "source": "expanded-traffic-system.trafficOps.green",
+        "target": "expanded-traffic-system.trafficOps.orange",
+        "position": {
+          "x": 615,
+          "y": 933
+        },
+        "size": {
+          "width": 71,
+          "height": 40
+        }
+      },
+      {
+        "id": "expanded-traffic-system.trafficOps.green#terminate[0]",
+        "uniqueId": "saciyzu9lip",
+        "data": {
+          "eventTypeData": {
+            "type": "named",
+            "eventType": "terminate"
+          },
+          "actions": []
+        },
+        "source": "expanded-traffic-system.trafficOps.green",
+        "target": "expanded-traffic-system.trafficOps.finished",
+        "position": {
+          "x": 600,
+          "y": 1023
+        },
+        "size": {
+          "width": 100,
+          "height": 40
+        }
+      },
+      {
+        "id": "expanded-traffic-system.trafficOps.green#Error[0]",
+        "uniqueId": "qqm3ogzuk1",
+        "data": {
+          "eventTypeData": {
+            "type": "named",
+            "eventType": "Error"
+          },
+          "actions": []
+        },
+        "source": "expanded-traffic-system.trafficOps.green",
+        "target": "expanded-traffic-system.trafficOps.Flashing Redish",
+        "position": {
+          "x": 615,
+          "y": 1113
+        },
+        "size": {
+          "width": 70,
+          "height": 40
+        }
+      },
+      {
+        "id": "expanded-traffic-system.trafficOps.green#TICK[0]",
+        "uniqueId": "a3u99vam7xf",
+        "data": {
+          "eventTypeData": {
+            "type": "named",
+            "eventType": "TICK"
+          },
+          "guard": {
+            "kind": "named",
+            "type": "isCounterReached",
+            "params": {}
+          },
+          "actions": [
+            {
+              "kind": "named",
+              "action": {
+                "type": "incrementCounter",
+                "params": {}
+              }
+            }
+          ]
+        },
+        "source": "expanded-traffic-system.trafficOps.green",
+        "target": "expanded-traffic-system.trafficOps.orange",
+        "position": {
+          "x": 530,
+          "y": 793
+        },
+        "size": {
+          "width": 240,
+          "height": 90
+        }
+      },
+      {
+        "id": "expanded-traffic-system.trafficOps.green#xstate.after(TRANSITION_DELAY)#expanded-traffic-system.trafficOps.green[0]",
+        "uniqueId": "1ehab9ryyu3j",
+        "data": {
+          "eventTypeData": {
+            "type": "after",
+            "delay": "TRANSITION_DELAY"
+          },
+          "actions": [
+            {
+              "kind": "named",
+              "action": {
+                "type": "doThisThatOrTheOther",
+                "params": {
+                  "test": 42
+                }
+              }
+            }
+          ]
+        },
+        "source": "expanded-traffic-system.trafficOps.green",
+        "target": "expanded-traffic-system.trafficOps.orange",
+        "position": {
+          "x": 529,
+          "y": 628
+        },
+        "size": {
+          "width": 242,
+          "height": 115
+        }
+      },
+      {
+        "id": "expanded-traffic-system.trafficOps.orange#done[0]",
+        "uniqueId": "zqhcfa9zo1p",
+        "data": {
+          "eventTypeData": {
+            "type": "named",
+            "eventType": "done"
+          },
+          "actions": []
+        },
+        "source": "expanded-traffic-system.trafficOps.orange",
+        "target": "expanded-traffic-system.trafficOps.red",
+        "position": {
+          "x": 1344,
+          "y": 569
+        },
+        "size": {
+          "width": 71,
+          "height": 40
+        }
+      },
+      {
+        "id": "expanded-traffic-system.trafficOps.orange#terminate[0]",
+        "uniqueId": "t489iplyrwm",
+        "data": {
+          "eventTypeData": {
+            "type": "named",
+            "eventType": "terminate"
+          },
+          "actions": []
+        },
+        "source": "expanded-traffic-system.trafficOps.orange",
+        "target": "expanded-traffic-system.trafficOps.finished",
+        "position": {
+          "x": 1330,
+          "y": 769
+        },
+        "size": {
+          "width": 100,
+          "height": 40
+        }
+      },
+      {
+        "id": "expanded-traffic-system.trafficOps.orange#Error[0]",
+        "uniqueId": "4r39p947ewk",
+        "data": {
+          "eventTypeData": {
+            "type": "named",
+            "eventType": "Error"
+          },
+          "actions": []
+        },
+        "source": "expanded-traffic-system.trafficOps.orange",
+        "target": "expanded-traffic-system.trafficOps.Flashing Redish",
+        "position": {
+          "x": 1345,
+          "y": 906
+        },
+        "size": {
+          "width": 70,
+          "height": 40
+        }
+      },
+      {
+        "id": "expanded-traffic-system.trafficOps.orange#xstate.after(TRANSITION_DELAY)#expanded-traffic-system.trafficOps.orange[0]",
+        "uniqueId": "kpxwnunvmqb",
+        "data": {
+          "eventTypeData": {
+            "type": "after",
+            "delay": "TRANSITION_DELAY"
+          },
+          "actions": []
+        },
+        "source": "expanded-traffic-system.trafficOps.orange",
+        "target": "expanded-traffic-system.trafficOps.red",
+        "position": {
+          "x": 1278,
+          "y": 679
+        },
+        "size": {
+          "width": 203,
+          "height": 40
+        }
+      },
+      {
+        "id": "expanded-traffic-system.trafficOps.red#redTimerExpired[0]",
+        "uniqueId": "v2v9roxjwvr",
+        "data": {
+          "eventTypeData": {
+            "type": "named",
+            "eventType": "redTimerExpired"
+          },
+          "actions": []
+        },
+        "source": "expanded-traffic-system.trafficOps.red",
+        "target": "expanded-traffic-system.trafficOps.green",
+        "position": {
+          "x": 578,
+          "y": 538
+        },
+        "size": {
+          "width": 144,
+          "height": 40
+        }
+      },
+      {
+        "id": "expanded-traffic-system.trafficOps.red#terminate[0]",
+        "uniqueId": "eu35bkhdb8n",
+        "data": {
+          "eventTypeData": {
+            "type": "named",
+            "eventType": "terminate"
+          },
+          "actions": []
+        },
+        "source": "expanded-traffic-system.trafficOps.red",
+        "target": "expanded-traffic-system.trafficOps.finished",
+        "position": {
+          "x": 2041,
+          "y": 783
+        },
+        "size": {
+          "width": 100,
+          "height": 40
+        }
+      },
+      {
+        "id": "expanded-traffic-system.trafficOps.red#Error[0]",
+        "uniqueId": "p60ykir8ogs",
+        "data": {
+          "eventTypeData": {
+            "type": "named",
+            "eventType": "Error"
+          },
+          "actions": []
+        },
+        "source": "expanded-traffic-system.trafficOps.red",
+        "target": "expanded-traffic-system.trafficOps.Flashing Redish",
+        "position": {
+          "x": 2056,
+          "y": 906
+        },
+        "size": {
+          "width": 70,
+          "height": 40
+        }
+      },
+      {
+        "id": "expanded-traffic-system.trafficOps.red#vehicleSensor[0]",
+        "uniqueId": "gs08mmr15lg",
+        "data": {
+          "eventTypeData": {
+            "type": "named",
+            "eventType": "vehicleSensor"
+          },
+          "guard": {
+            "kind": "named",
+            "type": "isNightProfile",
+            "params": {}
+          },
+          "actions": []
+        },
+        "source": "expanded-traffic-system.trafficOps.red",
+        "target": "expanded-traffic-system.trafficOps.green",
+        "position": {
+          "x": 516,
+          "y": 1203
+        },
+        "size": {
+          "width": 268,
+          "height": 40
+        }
+      },
+      {
+        "id": "expanded-traffic-system.trafficOps.red#xstate.after(TRANSITION_DELAY)#expanded-traffic-system.trafficOps.red[0]",
+        "uniqueId": "hvtowrne03h",
+        "data": {
+          "eventTypeData": {
+            "type": "after",
+            "delay": "TRANSITION_DELAY"
+          },
+          "actions": []
+        },
+        "source": "expanded-traffic-system.trafficOps.red",
+        "target": "expanded-traffic-system.trafficOps.green",
+        "position": {
+          "x": 549,
+          "y": 448
+        },
+        "size": {
+          "width": 203,
+          "height": 40
+        }
+      },
+      {
+        "id": "expanded-traffic-system.trafficOps.Flashing Redish#systemReset[0]",
+        "uniqueId": "vuzu3ldvywf",
+        "data": {
+          "eventTypeData": {
+            "type": "named",
+            "eventType": "systemReset"
+          },
+          "actions": []
+        },
+        "source": "expanded-traffic-system.trafficOps.Flashing Redish",
+        "target": "expanded-traffic-system.trafficOps.H",
+        "position": {
+          "x": 2030,
+          "y": 996
+        },
+        "size": {
+          "width": 121,
+          "height": 40
+        }
+      },
+      {
+        "id": "expanded-traffic-system.pedestrianOps.walk#xstate.after(PEDESTRIAN_DELAY)#expanded-traffic-system.pedestrianOps.walk[0]",
+        "uniqueId": "k0x97khvnlj",
+        "data": {
+          "eventTypeData": {
+            "type": "after",
+            "delay": "PEDESTRIAN_DELAY"
+          },
+          "actions": []
+        },
+        "source": "expanded-traffic-system.pedestrianOps.walk",
+        "target": "expanded-traffic-system.pedestrianOps.dontWalk",
+        "position": {
+          "x": 1380,
+          "y": 1566
+        },
+        "size": {
+          "width": 205,
+          "height": 40
+        }
+      },
+      {
+        "id": "expanded-traffic-system.pedestrianOps.dontWalk#xstate.after(PEDESTRIAN_DELAY)#expanded-traffic-system.pedestrianOps.dontWalk[0]",
+        "uniqueId": "k69g6ceg2m",
+        "data": {
+          "eventTypeData": {
+            "type": "after",
+            "delay": "PEDESTRIAN_DELAY"
+          },
+          "actions": []
+        },
+        "source": "expanded-traffic-system.pedestrianOps.dontWalk",
+        "target": "expanded-traffic-system.pedestrianOps.walk",
+        "position": {
+          "x": 1380,
+          "y": 1476
+        },
+        "size": {
+          "width": 205,
+          "height": 40
+        }
+      }
+    ],
+    "implementations": {
+      "actors": {
+        "timerService": {
+          "type": "actor",
+          "input": {
+            "type": "object",
+            "properties": {}
+          },
+          "output": {
+            "type": "object",
+            "properties": {}
+          },
+          "id": "timerService",
+          "name": "expanded-traffic-system.trafficOps:invocation[0]",
+          "imports": [],
+          "kind": "named"
+        }
+      },
+      "guards": {
+        "isCounterReached": {
+          "type": "guard",
+          "params": {
+            "type": "object",
+            "properties": {}
+          },
+          "id": "isCounterReached",
+          "name": "isCounterReached",
+          "imports": []
+        },
+        "isNightProfile": {
+          "type": "guard",
+          "params": {
+            "type": "object",
+            "properties": {}
+          },
+          "id": "isNightProfile",
+          "name": "isNightProfile",
+          "imports": []
+        }
+      },
+      "actions": {
+        "logEnterGreen": {
+          "type": "action",
+          "id": "logEnterGreen",
+          "name": "logEnterGreen",
+          "schema": {
+            "type": "object",
+            "properties": {}
+          },
+          "imports": []
+        },
+        "logExitGreen": {
+          "type": "action",
+          "id": "logExitGreen",
+          "name": "logExitGreen",
+          "schema": {
+            "type": "object",
+            "properties": {}
+          },
+          "imports": []
+        },
+        "incrementCounter": {
+          "type": "action",
+          "id": "incrementCounter",
+          "name": "incrementCounter",
+          "schema": {
+            "type": "object",
+            "properties": {}
+          },
+          "imports": []
+        },
+        "doThisThatOrTheOther": {
+          "type": "action",
+          "id": "doThisThatOrTheOther",
+          "name": "doThisThatOrTheOther",
+          "schema": {
+            "type": "object",
+            "properties": {
+              "test": 42
+            }
+          },
+          "imports": []
+        }
+      }
+    }
+  }

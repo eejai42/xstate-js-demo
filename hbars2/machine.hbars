@@ -1,0 +1,341 @@
+{{!--
+  machine.hbars
+  ----------------------------------------
+  A single Handlebars template that exports a JSON-based description
+  of your state machine, pulling from "edges" for transitions, etc.
+
+  Inline helpers included:
+    - edgesForSource
+    - groupTransitions
+    - objectHasKeys
+--}}
+
+{{!-- *inline helper edgesForSource
+function (root, sourceId) {
+  if (!root || !root.edges) return [];
+  return root.edges.filter(e => e.source === sourceId);
+}
+--}}
+
+{{!-- *inline helper groupTransitions
+function (edges) {
+  const grouped = { named: {}, after: {} };
+  edges.forEach(edge => {
+    const eData = (edge.data && edge.data.eventTypeData) ? edge.data.eventTypeData : {};
+    const eType = eData.type || "";
+    const eventName = eData.eventType || "";
+    const delay = eData.delay;
+    if (eType === "after" && delay) {
+      if (!grouped.after[delay]) grouped.after[delay] = [];
+      grouped.after[delay].push(edge);
+    } else {
+      if (!grouped.named[eventName]) grouped.named[eventName] = [];
+      grouped.named[eventName].push(edge);
+    }
+  });
+  return grouped;
+}
+--}}
+
+{{!-- *inline helper objectHasKeys
+function (obj) {
+  return obj && Object.keys(obj).length > 0;
+}
+--}}
+
+{
+  "id": "{{rootNode.data.key}}",
+  "type": "{{rootNode.data.type}}",
+  "description": "{{rootNode.data.description}}",
+  "context": {{{json context}}},
+
+  "states": {
+    {{!-- For each top-level node in rootNode.nodes, create a top-level state --}}
+    {{#each rootNode.nodes}}
+    "{{data.key}}": {
+      "id": "{{id}}",
+      "description": "{{data.description}}"
+      {{#if data.initial}}, "initial": "{{data.initial}}"{{/if}}
+      {{#if data.type}}, "type": "{{data.type}}"{{/if}}
+      {{#if data.history}}, "history": "{{data.history}}"{{/if}}
+
+      {{#if data.invoke.length}},
+      "invoke": [
+        {{#each data.invoke}}
+        {
+          "id": "{{id}}",
+          "src": "{{src}}"
+        }{{#unless @last}},{{/unless}}
+        {{/each}}
+      ]{{/if}}
+
+      {{#if data.entry.length}},
+      "entry": [
+        {{#each data.entry}}
+        "{{action.type}}"{{#unless @last}},{{/unless}}
+        {{/each}}
+      ]{{/if}}
+
+      {{#if data.exit.length}},
+      "exit": [
+        {{#each data.exit}}
+        "{{action.type}}"{{#unless @last}},{{/unless}}
+        {{/each}}
+      ]{{/if}},
+
+      "states": {
+        {{#each nodes}}
+        "{{data.key}}": {
+          {{#if data.description}}"description": "{{data.description}}",{{/if}}
+          {{#if data.type}}"type": "{{data.type}}",{{/if}}
+          {{#if data.history}}"history": "{{data.history}}",{{/if}}
+
+          {{#if data.entry.length}}
+          "entry": [
+            {{#each data.entry}}
+            "{{action.type}}"{{#unless @last}},{{/unless}}
+            {{/each}}
+          ],
+          {{/if}}
+
+          {{#if data.exit.length}}
+          "exit": [
+            {{#each data.exit}}
+            "{{action.type}}"{{#unless @last}},{{/unless}}
+            {{/each}}
+          ],
+          {{/if}}
+
+          {{!-- Sub-state transitions --}}
+          {{#with (edgesForSource ../../.. id) as |childEdges|}}
+            {{#with (groupTransitions childEdges) as |grouped|}}
+
+              {{!-- "on" for named events --}}
+              {{#if (objectHasKeys grouped.named)}}
+              "on": {
+                {{#each grouped.named}}
+                "{{@key}}":
+                  {{#if this.length}}
+                  [
+                    {{#each this}}
+                    {
+                      {{#if this.data.guard}}
+                      "cond": "{{this.data.guard.type}}",
+                      {{/if}}
+                      {{#if this.data.actions.length}}
+                      "actions": [
+                        {{#each this.data.actions}}
+                        "{{this.action.type}}"{{#unless @last}},{{/unless}}
+                        {{/each}}
+                      ],
+                      {{/if}}
+                      "target": "{{target}}"
+                    }{{#unless @last}},{{/unless}}
+                    {{/each}}
+                  ]
+                  {{else}}
+                  {
+                    {{#if this.data.guard}}
+                    "cond": "{{this.data.guard.type}}",
+                    {{/if}}
+                    {{#if this.data.actions.length}}
+                    "actions": [
+                      {{#each this.data.actions}}
+                      "{{this.action.type}}"{{#unless @last}},{{/unless}}
+                      {{/each}}
+                    ],
+                    {{/if}}
+                    "target": "{{this.target}}"
+                  }
+                  {{/if}}
+                {{#unless @last}},{{/unless}}
+                {{/each}}
+              }{{/if}}
+
+              {{#if (objectHasKeys grouped.after)}}
+              {{#if (objectHasKeys grouped.named)}},{{/if}}
+              "after": {
+                {{#each grouped.after}}
+                "{{@key}}":
+                  {{#if this.length}}
+                  [
+                    {{#each this}}
+                    {
+                      {{#if this.data.guard}}
+                      "cond": "{{this.data.guard.type}}",
+                      {{/if}}
+                      {{#if this.data.actions.length}}
+                      "actions": [
+                        {{#each this.data.actions}}
+                        "{{this.action.type}}"{{#unless @last}},{{/unless}}
+                        {{/each}}
+                      ],
+                      {{/if}}
+                      "target": "{{target}}"
+                    }{{#unless @last}},{{/unless}}
+                    {{/each}}
+                  ]
+                  {{else}}
+                  {
+                    {{#if this.data.guard}}
+                    "cond": "{{this.data.guard.type}}",
+                    {{/if}}
+                    {{#if this.data.actions.length}}
+                    "actions": [
+                      {{#each this.data.actions}}
+                      "{{this.action.type}}"{{#unless @last}},{{/unless}}
+                      {{/each}}
+                    ],
+                    {{/if}}
+                    "target": "{{this.target}}"
+                  }
+                  {{/if}}
+                {{#unless @last}},{{/unless}}
+                {{/each}}
+              }
+              {{/if}}
+
+            {{/with}}
+          {{/with}}
+        }{{#unless @last}},{{/unless}}
+        {{/each}}
+      }
+
+      {{!-- Parent-level transitions --}}
+      {{#with (edgesForSource ../.. id) as |parentEdges|}}
+        {{#with (groupTransitions parentEdges) as |grouped|}}
+
+          {{#if (objectHasKeys grouped.named)}},
+          "on": {
+            {{#each grouped.named}}
+            "{{@key}}":
+              {{#if this.length}}
+              [
+                {{#each this}}
+                {
+                  {{#if this.data.guard}}
+                  "cond": "{{this.data.guard.type}}",
+                  {{/if}}
+                  {{#if this.data.actions.length}}
+                  "actions": [
+                    {{#each this.data.actions}}
+                    "{{this.action.type}}"{{#unless @last}},{{/unless}}
+                    {{/each}}
+                  ],
+                  {{/if}}
+                  "target": "{{target}}"
+                }{{#unless @last}},{{/unless}}
+                {{/each}}
+              ]
+              {{else}}
+              {
+                {{#if this.data.guard}}
+                "cond": "{{this.data.guard.type}}",
+                {{/if}}
+                {{#if this.data.actions.length}}
+                "actions": [
+                  {{#each this.data.actions}}
+                  "{{this.action.type}}"{{#unless @last}},{{/unless}}
+                  {{/each}}
+                ],
+                {{/if}}
+                "target": "{{this.target}}"
+              }
+              {{/if}}
+            {{#unless @last}},{{/unless}}
+            {{/each}}
+          }{{/if}}
+
+          {{#if (objectHasKeys grouped.after)}}
+          {{#if (or (objectHasKeys grouped.named) (objectHasKeys grouped.after))}},{{/if}}
+          "after": {
+            {{#each grouped.after}}
+            "{{@key}}":
+              {{#if this.length}}
+              [
+                {{#each this}}
+                {
+                  {{#if this.data.guard}}
+                  "cond": "{{this.data.guard.type}}",
+                  {{/if}}
+                  {{#if this.data.actions.length}}
+                  "actions": [
+                    {{#each this.data.actions}}
+                    "{{this.action.type}}"{{#unless @last}},{{/unless}}
+                    {{/each}}
+                  ],
+                  {{/if}}
+                  "target": "{{target}}"
+                }{{#unless @last}},{{/unless}}
+                {{/each}}
+              ]
+              {{else}}
+              {
+                {{#if this.data.guard}}
+                "cond": "{{this.data.guard.type}}",
+                {{/if}}
+                {{#if this.data.actions.length}}
+                "actions": [
+                  {{#each this.data.actions}}
+                  "{{this.action.type}}"{{#unless @last}},{{/unless}}
+                  {{/each}}
+                ],
+                {{/if}}
+                "target": "{{this.target}}"
+              }
+              {{/if}}
+            {{#unless @last}},{{/unless}}
+            {{/each}}
+          }
+          {{/if}}
+
+        {{/with}}
+      {{/with}}
+    }{{#unless @last}},{{/unless}}
+    {{/each}}
+  },
+
+  "implementations": {
+    "guards": {
+      {{#each implementations.guards}}
+      "{{@key}}": {
+        "id": "{{this.id}}",
+        "name": "{{this.name}}"
+      }{{#unless @last}},{{/unless}}
+      {{/each}}
+    },
+    "actions": {
+      {{#each implementations.actions}}
+      "{{@key}}": {
+        "id": "{{this.id}}",
+        "name": "{{this.name}}",
+        "schema": {{{json this.schema}}}
+      }{{#unless @last}},{{/unless}}
+      {{/each}}
+    },
+    "actors": {
+      {{#each implementations.actors}}
+      "{{@key}}": {
+        "id": "{{this.id}}",
+        "name": "{{this.name}}",
+        "input": {{{json this.input}}},
+        "output": {{{json this.output}}}
+      }{{#unless @last}},{{/unless}}
+      {{/each}}
+    }
+  },
+
+  "schemas": {
+    "events": {
+      {{#each schemas.events}}
+      "{{@key}}": {
+        "properties": {
+          {{#each this.properties}}
+          "{{@key}}": "{{this}}"{{#unless @last}},{{/unless}}
+          {{/each}}
+        }
+      }{{#unless @last}},{{/unless}}
+      {{/each}}
+    }
+  }
+}
