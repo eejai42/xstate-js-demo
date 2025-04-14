@@ -1,13 +1,9 @@
+{{!-- machine.hbars --}}
 {{!--
-  machine.hbars
-  ----------------------------------------
-  A single Handlebars template that exports a JSON-based description
-  of your state machine, pulling from "edges" for transitions, etc.
+  A Handlebars template that exports a JSON-based description of your traffic & pedestrian
+  state machine, referencing "edges" for transitions. It ensures no trailing commas.
 
-  Inline helpers included:
-    - edgesForSource
-    - groupTransitions
-    - objectHasKeys
+  Inline helpers: edgesForSource, groupTransitions, objectHasKeys
 --}}
 
 {{!-- *inline helper edgesForSource
@@ -21,16 +17,17 @@ function (root, sourceId) {
 function (edges) {
   const grouped = { named: {}, after: {} };
   edges.forEach(edge => {
-    const eData = (edge.data && edge.data.eventTypeData) ? edge.data.eventTypeData : {};
-    const eType = eData.type || "";
-    const eventName = eData.eventType || "";
+    const eData = edge.data && edge.data.eventTypeData ? edge.data.eventTypeData : {};
+    const evtType = eData.type || "";
+    const evtName = eData.eventType || "";
     const delay = eData.delay;
-    if (eType === "after" && delay) {
+
+    if (evtType === "after" && delay) {
       if (!grouped.after[delay]) grouped.after[delay] = [];
       grouped.after[delay].push(edge);
     } else {
-      if (!grouped.named[eventName]) grouped.named[eventName] = [];
-      grouped.named[eventName].push(edge);
+      if (!grouped.named[evtName]) grouped.named[evtName] = [];
+      grouped.named[evtName].push(edge);
     }
   });
   return grouped;
@@ -50,15 +47,20 @@ function (obj) {
   "context": {{{json context}}},
 
   "states": {
-    {{!-- For each top-level node in rootNode.nodes, create a top-level state --}}
+    {{!-- Loop top-level states (trafficOps, pedestrianOps) --}}
     {{#each rootNode.nodes}}
     "{{data.key}}": {
-      "id": "{{id}}",
-      "description": "{{data.description}}"
-      {{#if data.initial}}, "initial": "{{data.initial}}"{{/if}}
-      {{#if data.type}}, "type": "{{data.type}}"{{/if}}
-      {{#if data.history}}, "history": "{{data.history}}"{{/if}}
+      "id": "{{id}}"
+      {{#if data.description}},
+      "description": "{{data.description}}"{{/if}}
+      {{#if data.initial}},
+      "initial": "{{data.initial}}"{{/if}}
+      {{#if data.type}},
+      "type": "{{data.type}}"{{/if}}
+      {{#if data.history}},
+      "history": "{{data.history}}"{{/if}}
 
+      {{!-- If there's an invoked service array --}}
       {{#if data.invoke.length}},
       "invoke": [
         {{#each data.invoke}}
@@ -69,6 +71,7 @@ function (obj) {
         {{/each}}
       ]{{/if}}
 
+      {{!-- entry actions --}}
       {{#if data.entry.length}},
       "entry": [
         {{#each data.entry}}
@@ -76,6 +79,7 @@ function (obj) {
         {{/each}}
       ]{{/if}}
 
+      {{!-- exit actions --}}
       {{#if data.exit.length}},
       "exit": [
         {{#each data.exit}}
@@ -83,35 +87,42 @@ function (obj) {
         {{/each}}
       ]{{/if}},
 
+
       "states": {
+        {{!-- Child states of trafficOps, for example --}}
         {{#each nodes}}
         "{{data.key}}": {
-          {{#if data.description}}"description": "{{data.description}}",{{/if}}
-          {{#if data.type}}"type": "{{data.type}}",{{/if}}
-          {{#if data.history}}"history": "{{data.history}}",{{/if}}
+          {{#if data.description}}
+          "description": "{{data.description}}"{{/if}}
+          {{#if data.type}}
+          {{#if data.description}},{{/if}}
+          "type": "{{data.type}}"{{/if}}
+          {{#if data.history}}
+          {{#if (or data.description data.type)}},{{/if}}
+          "history": "{{data.history}}"{{/if}}
 
           {{#if data.entry.length}}
+          {{#if (or data.description data.type data.history)}},{{/if}}
           "entry": [
             {{#each data.entry}}
             "{{action.type}}"{{#unless @last}},{{/unless}}
             {{/each}}
-          ],
-          {{/if}}
+          ]{{/if}}
 
           {{#if data.exit.length}}
+          {{#if (or data.description data.type data.history data.entry.length)}},{{/if}}
           "exit": [
             {{#each data.exit}}
             "{{action.type}}"{{#unless @last}},{{/unless}}
             {{/each}}
-          ],
-          {{/if}}
+          ]{{/if}}
 
-          {{!-- Sub-state transitions --}}
-          {{#with (edgesForSource ../../.. id) as |childEdges|}}
+          {{!-- Gather sub-state transitions --}}
+          {{#with (edgesForSource ../../../.. id) as |childEdges|}}
             {{#with (groupTransitions childEdges) as |grouped|}}
-
-              {{!-- "on" for named events --}}
+              {{!-- Named transitions => "on": {...} --}}
               {{#if (objectHasKeys grouped.named)}}
+              {{#if (or data.description data.type data.history data.entry.length data.exit.length)}},{{/if}}
               "on": {
                 {{#each grouped.named}}
                 "{{@key}}":
@@ -120,12 +131,17 @@ function (obj) {
                     {{#each this}}
                     {
                       {{#if this.data.guard}}
-                      "cond": "{{this.data.guard.type}}",
+                      "guard": {
+                        "type": "{{this.data.guard.type}}"
+                      },
                       {{/if}}
                       {{#if this.data.actions.length}}
                       "actions": [
                         {{#each this.data.actions}}
-                        "{{this.action.type}}"{{#unless @last}},{{/unless}}
+                        {
+                          "type": "{{this.action.type}}"
+                          {{#if this.action.params}}, "params": {{{json this.action.params}}}{{/if}}
+                        }{{#unless @last}},{{/unless}}
                         {{/each}}
                       ],
                       {{/if}}
@@ -136,12 +152,17 @@ function (obj) {
                   {{else}}
                   {
                     {{#if this.data.guard}}
-                    "cond": "{{this.data.guard.type}}",
+                    "guard": {
+                      "type": "{{this.data.guard.type}}"
+                    },
                     {{/if}}
                     {{#if this.data.actions.length}}
                     "actions": [
                       {{#each this.data.actions}}
-                      "{{this.action.type}}"{{#unless @last}},{{/unless}}
+                      {
+                        "type": "{{this.action.type}}"
+                        {{#if this.action.params}}, "params": {{{json this.action.params}}}{{/if}}
+                      }{{#unless @last}},{{/unless}}
                       {{/each}}
                     ],
                     {{/if}}
@@ -152,8 +173,9 @@ function (obj) {
                 {{/each}}
               }{{/if}}
 
+              {{!-- Delayed transitions => "after": {...} --}}
               {{#if (objectHasKeys grouped.after)}}
-              {{#if (objectHasKeys grouped.named)}},{{/if}}
+              {{#if (or data.description data.type data.history data.entry.length data.exit.length (objectHasKeys grouped.named))}},{{/if}}
               "after": {
                 {{#each grouped.after}}
                 "{{@key}}":
@@ -162,12 +184,17 @@ function (obj) {
                     {{#each this}}
                     {
                       {{#if this.data.guard}}
-                      "cond": "{{this.data.guard.type}}",
+                      "guard": {
+                        "type": "{{this.data.guard.type}}"
+                      },
                       {{/if}}
                       {{#if this.data.actions.length}}
                       "actions": [
                         {{#each this.data.actions}}
-                        "{{this.action.type}}"{{#unless @last}},{{/unless}}
+                        {
+                          "type": "{{this.action.type}}"
+                          {{#if this.action.params}}, "params": {{{json this.action.params}}}{{/if}}
+                        }{{#unless @last}},{{/unless}}
                         {{/each}}
                       ],
                       {{/if}}
@@ -178,12 +205,17 @@ function (obj) {
                   {{else}}
                   {
                     {{#if this.data.guard}}
-                    "cond": "{{this.data.guard.type}}",
+                    "guard": {
+                      "type": "{{this.data.guard.type}}"
+                    },
                     {{/if}}
                     {{#if this.data.actions.length}}
                     "actions": [
                       {{#each this.data.actions}}
-                      "{{this.action.type}}"{{#unless @last}},{{/unless}}
+                      {
+                        "type": "{{this.action.type}}"
+                        {{#if this.action.params}}, "params": {{{json this.action.params}}}{{/if}}
+                      }{{#unless @last}},{{/unless}}
                       {{/each}}
                     ],
                     {{/if}}
@@ -194,7 +226,6 @@ function (obj) {
                 {{/each}}
               }
               {{/if}}
-
             {{/with}}
           {{/with}}
         }{{#unless @last}},{{/unless}}
@@ -202,9 +233,8 @@ function (obj) {
       }
 
       {{!-- Parent-level transitions --}}
-      {{#with (edgesForSource ../.. id) as |parentEdges|}}
+      {{#with (edgesForSource ../../.. id) as |parentEdges|}}
         {{#with (groupTransitions parentEdges) as |grouped|}}
-
           {{#if (objectHasKeys grouped.named)}},
           "on": {
             {{#each grouped.named}}
@@ -214,12 +244,17 @@ function (obj) {
                 {{#each this}}
                 {
                   {{#if this.data.guard}}
-                  "cond": "{{this.data.guard.type}}",
+                  "guard": {
+                    "type": "{{this.data.guard.type}}"
+                  },
                   {{/if}}
                   {{#if this.data.actions.length}}
                   "actions": [
                     {{#each this.data.actions}}
-                    "{{this.action.type}}"{{#unless @last}},{{/unless}}
+                    {
+                      "type": "{{this.action.type}}"
+                      {{#if this.action.params}}, "params": {{{json this.action.params}}}{{/if}}
+                    }{{#unless @last}},{{/unless}}
                     {{/each}}
                   ],
                   {{/if}}
@@ -230,12 +265,17 @@ function (obj) {
               {{else}}
               {
                 {{#if this.data.guard}}
-                "cond": "{{this.data.guard.type}}",
+                "guard": {
+                  "type": "{{this.data.guard.type}}"
+                },
                 {{/if}}
                 {{#if this.data.actions.length}}
                 "actions": [
                   {{#each this.data.actions}}
-                  "{{this.action.type}}"{{#unless @last}},{{/unless}}
+                  {
+                    "type": "{{this.action.type}}"
+                    {{#if this.action.params}}, "params": {{{json this.action.params}}}{{/if}}
+                  }{{#unless @last}},{{/unless}}
                   {{/each}}
                 ],
                 {{/if}}
@@ -247,7 +287,7 @@ function (obj) {
           }{{/if}}
 
           {{#if (objectHasKeys grouped.after)}}
-          {{#if (or (objectHasKeys grouped.named) (objectHasKeys grouped.after))}},{{/if}}
+          {{#if (objectHasKeys grouped.named)}},{{/if}}
           "after": {
             {{#each grouped.after}}
             "{{@key}}":
@@ -256,12 +296,17 @@ function (obj) {
                 {{#each this}}
                 {
                   {{#if this.data.guard}}
-                  "cond": "{{this.data.guard.type}}",
+                  "guard": {
+                    "type": "{{this.data.guard.type}}"
+                  },
                   {{/if}}
                   {{#if this.data.actions.length}}
                   "actions": [
                     {{#each this.data.actions}}
-                    "{{this.action.type}}"{{#unless @last}},{{/unless}}
+                    {
+                      "type": "{{this.action.type}}"
+                      {{#if this.action.params}}, "params": {{{json this.action.params}}}{{/if}}
+                    }{{#unless @last}},{{/unless}}
                     {{/each}}
                   ],
                   {{/if}}
@@ -272,12 +317,17 @@ function (obj) {
               {{else}}
               {
                 {{#if this.data.guard}}
-                "cond": "{{this.data.guard.type}}",
+                "guard": {
+                  "type": "{{this.data.guard.type}}"
+                },
                 {{/if}}
                 {{#if this.data.actions.length}}
                 "actions": [
                   {{#each this.data.actions}}
-                  "{{this.action.type}}"{{#unless @last}},{{/unless}}
+                  {
+                    "type": "{{this.action.type}}"
+                    {{#if this.action.params}}, "params": {{{json this.action.params}}}{{/if}}
+                  }{{#unless @last}},{{/unless}}
                   {{/each}}
                 ],
                 {{/if}}
@@ -288,9 +338,9 @@ function (obj) {
             {{/each}}
           }
           {{/if}}
-
         {{/with}}
       {{/with}}
+
     }{{#unless @last}},{{/unless}}
     {{/each}}
   },

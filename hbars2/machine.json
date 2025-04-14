@@ -8,9 +8,11 @@
 },
   "states": {
     "trafficOps": {
-      "id": "expanded-traffic-system.trafficOps",
+      "id": "expanded-traffic-system.trafficOps"
+      ,
       "description": "Controls main traffic lights, uses an invoked timer service."
-      , "initial": "green"
+      ,
+      "initial": "green"
       ,
       "invoke": [
         {
@@ -21,10 +23,12 @@
       ,
       "states": {
         "green": {
-          "description": "Green light. Eventually transitions to orange.",
+          "description": "Green light. Eventually transitions to orange."
+          ,
           "entry": [
             "logEnterGreen"
-          ],
+          ]
+          ,
           "exit": [
             "logExitGreen"
           ]
@@ -36,22 +40,26 @@
           "description": "Red light. Transitions to green if 'NightProfile' is active and vehicleSensor is triggered, or after a timer."
         },
         "H": {
-          "type": "history",
+          "type": "history"
+          ,
           "history": "shallow"
         },
         "Flashing Redish": {
           "description": "Error mode. On systemReset, returns to last known sub-state via 'H'."
         },
         "finished": {
-          "description": "Traffic operations complete.",
+          "description": "Traffic operations complete."
+          ,
           "type": "final"
         }
       }
     },
     "pedestrianOps": {
-      "id": "expanded-traffic-system.pedestrianOps",
+      "id": "expanded-traffic-system.pedestrianOps"
+      ,
       "description": "Cycles between 'walk' and 'dontWalk' signals on a delay."
-      , "initial": "walk"
+      ,
+      "initial": "walk"
       ,
       "states": {
         "walk": {
