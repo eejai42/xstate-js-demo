@@ -9,10 +9,8 @@
   "states": {
     "trafficOps": {
       "id": "expanded-traffic-system.trafficOps"
-      ,
-      "description": "Controls main traffic lights, uses an invoked timer service."
-      ,
-      "initial": "green"
+      ,      "description": "Controls main traffic lights, uses an invoked timer service."
+      ,          "initial": "green"
       ,
       "invoke": [
         {
@@ -31,8 +29,8 @@
           ,
           "exit": [
             "logExitGreen"
-          ],
-              "on": {
+          ]
+              , "on": {
                 "done":
                   [
                     {
@@ -69,7 +67,8 @@
                       "target": "expanded-traffic-system.trafficOps.orange"
                     }
                   ]
-              },
+              }
+              ,
               "after": {
                 "TRANSITION_DELAY":
                   [
@@ -88,8 +87,8 @@
               }
         },
         "orange": {
-          "description": "Orange (amber) light. After a short delay, transitions to red.",
-              "on": {
+          "description": "Orange (amber) light. After a short delay, transitions to red."
+              , "on": {
                 "done":
                   [
                     {
@@ -110,7 +109,8 @@
                       "target": "expanded-traffic-system.trafficOps.Flashing Redish"
                     }
                   ]
-              },
+              }
+              ,
               "after": {
                 "TRANSITION_DELAY":
                   [
@@ -121,8 +121,8 @@
               }
         },
         "red": {
-          "description": "Red light. Transitions to green if 'NightProfile' is active and vehicleSensor is triggered, or after a timer.",
-              "on": {
+          "description": "Red light. Transitions to green if 'NightProfile' is active and vehicleSensor is triggered, or after a timer."
+              , "on": {
                 "redTimerExpired":
                   [
                     {
@@ -153,7 +153,8 @@
                       "target": "expanded-traffic-system.trafficOps.green"
                     }
                   ]
-              },
+              }
+              ,
               "after": {
                 "TRANSITION_DELAY":
                   [
@@ -169,8 +170,8 @@
           "history": "shallow"
         },
         "Flashing Redish": {
-          "description": "Error mode. On systemReset, returns to last known sub-state via 'H'.",
-              "on": {
+          "description": "Error mode. On systemReset, returns to last known sub-state via 'H'."
+              , "on": {
                 "systemReset":
                   [
                     {
@@ -188,10 +189,8 @@
     },
     "pedestrianOps": {
       "id": "expanded-traffic-system.pedestrianOps"
-      ,
-      "description": "Cycles between 'walk' and 'dontWalk' signals on a delay."
-      ,
-      "initial": "walk"
+      ,      "description": "Cycles between 'walk' and 'dontWalk' signals on a delay."
+      ,          "initial": "walk"
       ,
       "states": {
         "walk": {

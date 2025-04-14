@@ -40,13 +40,6 @@ function (obj) {
 }
 --}}
 
-{{!--
-  *** We wrap everything in "#with this as |machine|", so we can call:
-      machine.rootNode  (instead of rootNode)
-      machine.context   (instead of context)
-      edgesForSource machine id (instead of edgesForSource ../../.. id)
---}}
-
 {{#with this as |machine|}}
 {
   "id": "{{machine.rootNode.data.key}}",
@@ -55,20 +48,14 @@ function (obj) {
   "context": {{{json machine.context}}},
 
   "states": {
-    {{!-- Loop top-level states (trafficOps, pedestrianOps) --}}
     {{#each machine.rootNode.nodes}}
     "{{data.key}}": {
       "id": "{{id}}"
-      {{#if data.description}},
-      "description": "{{data.description}}"{{/if}}
-      {{#if data.initial}},
-      "initial": "{{data.initial}}"{{/if}}
-      {{#if data.type}},
-      "type": "{{data.type}}"{{/if}}
-      {{#if data.history}},
-      "history": "{{data.history}}"{{/if}}
+      {{#if data.description}},      "description": "{{data.description}}"{{/if}}
+      {{#if data.initial}},          "initial": "{{data.initial}}"{{/if}}
+      {{#if data.type}},             "type": "{{data.type}}"{{/if}}
+      {{#if data.history}},          "history": "{{data.history}}"{{/if}}
 
-      {{!-- If there's an invoked service array --}}
       {{#if data.invoke.length}},
       "invoke": [
         {{#each data.invoke}}
@@ -79,7 +66,6 @@ function (obj) {
         {{/each}}
       ]{{/if}}
 
-      {{!-- entry actions --}}
       {{#if data.entry.length}},
       "entry": [
         {{#each data.entry}}
@@ -87,7 +73,6 @@ function (obj) {
         {{/each}}
       ]{{/if}}
 
-      {{!-- exit actions --}}
       {{#if data.exit.length}},
       "exit": [
         {{#each data.exit}}
@@ -97,7 +82,6 @@ function (obj) {
 
 
       "states": {
-        {{!-- Child states of trafficOps, for example --}}
         {{#each nodes}}
         "{{data.key}}": {
           {{#if data.description}}
@@ -125,13 +109,10 @@ function (obj) {
             {{/each}}
           ]{{/if}}
 
-          {{!-- Gather sub-state transitions --}}
           {{#with (edgesForSource machine id) as |childEdges|}}
             {{#with (groupTransitions childEdges) as |grouped|}}
-              {{!-- Named transitions => "on": {...} --}}
               {{#if (objectHasKeys grouped.named)}}
-              {{#if (or data.description data.type data.history data.entry.length data.exit.length)}},{{/if}}
-              "on": {
+              , "on": {
                 {{#each grouped.named}}
                 "{{@key}}":
                   {{#if this.length}}
@@ -179,11 +160,11 @@ function (obj) {
                   {{/if}}
                 {{#unless @last}},{{/unless}}
                 {{/each}}
-              }{{/if}}
+              }
+              {{#if (objectHasKeys grouped.after)}},{{/if}}
+              {{/if}}
 
-              {{!-- Delayed transitions => "after": {...} --}}
               {{#if (objectHasKeys grouped.after)}}
-              {{#if (or data.description data.type data.history data.entry.length data.exit.length (objectHasKeys grouped.named))}},{{/if}}
               "after": {
                 {{#each grouped.after}}
                 "{{@key}}":
@@ -240,11 +221,10 @@ function (obj) {
         {{/each}}
       }
 
-      {{!-- Parent-level transitions --}}
       {{#with (edgesForSource machine id) as |parentEdges|}}
         {{#with (groupTransitions parentEdges) as |grouped|}}
-          {{#if (objectHasKeys grouped.named)}},
-          "on": {
+          {{#if (objectHasKeys grouped.named)}}
+          , "on": {
             {{#each grouped.named}}
             "{{@key}}":
               {{#if this.length}}
@@ -292,10 +272,11 @@ function (obj) {
               {{/if}}
             {{#unless @last}},{{/unless}}
             {{/each}}
-          }{{/if}}
+          }
+          {{#if (objectHasKeys grouped.after)}},{{/if}}
+          {{/if}}
 
           {{#if (objectHasKeys grouped.after)}}
-          {{#if (objectHasKeys grouped.named)}},{{/if}}
           "after": {
             {{#each grouped.after}}
             "{{@key}}":
