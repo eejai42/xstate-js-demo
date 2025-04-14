@@ -31,13 +31,137 @@
           ,
           "exit": [
             "logExitGreen"
-          ]
+          ],
+              "on": {
+                "done":
+                  [
+                    {
+                      "target": "expanded-traffic-system.trafficOps.orange"
+                    }
+                  ]
+                ,
+                "terminate":
+                  [
+                    {
+                      "target": "expanded-traffic-system.trafficOps.finished"
+                    }
+                  ]
+                ,
+                "Error":
+                  [
+                    {
+                      "target": "expanded-traffic-system.trafficOps.Flashing Redish"
+                    }
+                  ]
+                ,
+                "TICK":
+                  [
+                    {
+                      "guard": {
+                        "type": "isCounterReached"
+                      },
+                      "actions": [
+                        {
+                          "type": "incrementCounter"
+                          , "params": {}
+                        }
+                      ],
+                      "target": "expanded-traffic-system.trafficOps.orange"
+                    }
+                  ]
+              },
+              "after": {
+                "TRANSITION_DELAY":
+                  [
+                    {
+                      "actions": [
+                        {
+                          "type": "doThisThatOrTheOther"
+                          , "params": {
+  "test": 42
+}
+                        }
+                      ],
+                      "target": "expanded-traffic-system.trafficOps.orange"
+                    }
+                  ]
+              }
         },
         "orange": {
-          "description": "Orange (amber) light. After a short delay, transitions to red."
+          "description": "Orange (amber) light. After a short delay, transitions to red.",
+              "on": {
+                "done":
+                  [
+                    {
+                      "target": "expanded-traffic-system.trafficOps.red"
+                    }
+                  ]
+                ,
+                "terminate":
+                  [
+                    {
+                      "target": "expanded-traffic-system.trafficOps.finished"
+                    }
+                  ]
+                ,
+                "Error":
+                  [
+                    {
+                      "target": "expanded-traffic-system.trafficOps.Flashing Redish"
+                    }
+                  ]
+              },
+              "after": {
+                "TRANSITION_DELAY":
+                  [
+                    {
+                      "target": "expanded-traffic-system.trafficOps.red"
+                    }
+                  ]
+              }
         },
         "red": {
-          "description": "Red light. Transitions to green if 'NightProfile' is active and vehicleSensor is triggered, or after a timer."
+          "description": "Red light. Transitions to green if 'NightProfile' is active and vehicleSensor is triggered, or after a timer.",
+              "on": {
+                "redTimerExpired":
+                  [
+                    {
+                      "target": "expanded-traffic-system.trafficOps.green"
+                    }
+                  ]
+                ,
+                "terminate":
+                  [
+                    {
+                      "target": "expanded-traffic-system.trafficOps.finished"
+                    }
+                  ]
+                ,
+                "Error":
+                  [
+                    {
+                      "target": "expanded-traffic-system.trafficOps.Flashing Redish"
+                    }
+                  ]
+                ,
+                "vehicleSensor":
+                  [
+                    {
+                      "guard": {
+                        "type": "isNightProfile"
+                      },
+                      "target": "expanded-traffic-system.trafficOps.green"
+                    }
+                  ]
+              },
+              "after": {
+                "TRANSITION_DELAY":
+                  [
+                    {
+                      "target": "expanded-traffic-system.trafficOps.green"
+                    }
+                  ]
+              }
         },
         "H": {
           "type": "history"
@@ -45,7 +169,15 @@
           "history": "shallow"
         },
         "Flashing Redish": {
-          "description": "Error mode. On systemReset, returns to last known sub-state via 'H'."
+          "description": "Error mode. On systemReset, returns to last known sub-state via 'H'.",
+              "on": {
+                "systemReset":
+                  [
+                    {
+                      "target": "expanded-traffic-system.trafficOps.H"
+                    }
+                  ]
+              }
         },
         "finished": {
           "description": "Traffic operations complete."
@@ -63,8 +195,24 @@
       ,
       "states": {
         "walk": {
+              "after": {
+                "PEDESTRIAN_DELAY":
+                  [
+                    {
+                      "target": "expanded-traffic-system.pedestrianOps.dontWalk"
+                    }
+                  ]
+              }
         },
         "dontWalk": {
+              "after": {
+                "PEDESTRIAN_DELAY":
+                  [
+                    {
+                      "target": "expanded-traffic-system.pedestrianOps.walk"
+                    }
+                  ]
+              }
         }
       }
     }

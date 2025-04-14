@@ -40,15 +40,23 @@ function (obj) {
 }
 --}}
 
+{{!--
+  *** We wrap everything in "#with this as |machine|", so we can call:
+      machine.rootNode  (instead of rootNode)
+      machine.context   (instead of context)
+      edgesForSource machine id (instead of edgesForSource ../../.. id)
+--}}
+
+{{#with this as |machine|}}
 {
-  "id": "{{rootNode.data.key}}",
-  "type": "{{rootNode.data.type}}",
-  "description": "{{rootNode.data.description}}",
-  "context": {{{json context}}},
+  "id": "{{machine.rootNode.data.key}}",
+  "type": "{{machine.rootNode.data.type}}",
+  "description": "{{machine.rootNode.data.description}}",
+  "context": {{{json machine.context}}},
 
   "states": {
     {{!-- Loop top-level states (trafficOps, pedestrianOps) --}}
-    {{#each rootNode.nodes}}
+    {{#each machine.rootNode.nodes}}
     "{{data.key}}": {
       "id": "{{id}}"
       {{#if data.description}},
@@ -118,7 +126,7 @@ function (obj) {
           ]{{/if}}
 
           {{!-- Gather sub-state transitions --}}
-          {{#with (edgesForSource ../../../.. id) as |childEdges|}}
+          {{#with (edgesForSource machine id) as |childEdges|}}
             {{#with (groupTransitions childEdges) as |grouped|}}
               {{!-- Named transitions => "on": {...} --}}
               {{#if (objectHasKeys grouped.named)}}
@@ -233,7 +241,7 @@ function (obj) {
       }
 
       {{!-- Parent-level transitions --}}
-      {{#with (edgesForSource ../../.. id) as |parentEdges|}}
+      {{#with (edgesForSource machine id) as |parentEdges|}}
         {{#with (groupTransitions parentEdges) as |grouped|}}
           {{#if (objectHasKeys grouped.named)}},
           "on": {
@@ -347,7 +355,7 @@ function (obj) {
 
   "implementations": {
     "guards": {
-      {{#each implementations.guards}}
+      {{#each machine.implementations.guards}}
       "{{@key}}": {
         "id": "{{this.id}}",
         "name": "{{this.name}}"
@@ -355,7 +363,7 @@ function (obj) {
       {{/each}}
     },
     "actions": {
-      {{#each implementations.actions}}
+      {{#each machine.implementations.actions}}
       "{{@key}}": {
         "id": "{{this.id}}",
         "name": "{{this.name}}",
@@ -364,7 +372,7 @@ function (obj) {
       {{/each}}
     },
     "actors": {
-      {{#each implementations.actors}}
+      {{#each machine.implementations.actors}}
       "{{@key}}": {
         "id": "{{this.id}}",
         "name": "{{this.name}}",
@@ -377,7 +385,7 @@ function (obj) {
 
   "schemas": {
     "events": {
-      {{#each schemas.events}}
+      {{#each machine.schemas.events}}
       "{{@key}}": {
         "properties": {
           {{#each this.properties}}
@@ -389,3 +397,4 @@ function (obj) {
     }
   }
 }
+{{/with}}
