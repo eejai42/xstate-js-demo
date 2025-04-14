@@ -1,37 +1,7 @@
-{{!-- machine.hbars --}}
+{{!-- README.hbars --}}
 {{!--
-  A Handlebars template that exports a JSON-based description of your traffic & pedestrian
-  state machine, referencing "edges" for transitions. It ensures no trailing commas.
-
-  Inline helpers: edgesForSource, groupTransitions, objectHasKeys
---}}
-
-{{!-- *inline helper edgesForSource
-function (root, sourceId) {
-  if (!root || !root.edges) return [];
-  return root.edges.filter(e => e.source === sourceId);
-}
---}}
-
-{{!-- *inline helper groupTransitions
-function (edges) {
-  const grouped = { named: {}, after: {} };
-  edges.forEach(edge => {
-    const eData = edge.data && edge.data.eventTypeData ? edge.data.eventTypeData : {};
-    const evtType = eData.type || "";
-    const evtName = eData.eventType || "";
-    const delay = eData.delay;
-
-    if (evtType === "after" && delay) {
-      if (!grouped.after[delay]) grouped.after[delay] = [];
-      grouped.after[delay].push(edge);
-    } else {
-      if (!grouped.named[evtName]) grouped.named[evtName] = [];
-      grouped.named[evtName].push(edge);
-    }
-  });
-  return grouped;
-}
+  A Handlebars template that generates a Markdown-style README from a machine JSON.
+  It uses "inline helpers" that your environment will parse, similar to machine.hbars.
 --}}
 
 {{!-- *inline helper objectHasKeys
@@ -40,342 +10,169 @@ function (obj) {
 }
 --}}
 
-{{#with this as |machine|}}
-{
-  "id": "{{machine.rootNode.data.key}}",
-  "type": "{{machine.rootNode.data.type}}",
-  "description": "{{machine.rootNode.data.description}}",
-  "context": {{{json machine.context}}},
+{{!-- *inline helper toAnchor
+function(str) {
+  // Remove punctuation/spaces/dots/apostrophes/hyphens for GitHub-style anchors
+  return str
+    .replace(/[.]/g, "")
+    .replace(/['"]/g, "")
+    .replace(/ /g, "")
+    .replace(/-/g, "")
+    .toLowerCase();
+}
+--}}
 
-  "states": {
-    {{#each machine.rootNode.nodes}}
-    "{{data.key}}": {
-      "id": "{{id}}"
-      {{#if data.description}},      "description": "{{data.description}}"{{/if}}
-      {{#if data.initial}},          "initial": "{{data.initial}}"{{/if}}
-      {{#if data.type}},             "type": "{{data.type}}"{{/if}}
-      {{#if data.history}},          "history": "{{data.history}}"{{/if}}
+{{!-- 
+  *inline helper buildREADME 
+  Recursively walks the machine to produce the entire README as a single string.
+  The "machine" param is the entire object.
+  The "stateId" param is the current state's ID (like "expanded-traffic-system.trafficOps.green").
+  The "stateObj" param is that state's JSON (which may have sub-states).
+  The "indentLevel" param helps produce the right level of "##" headings.
+--}}
 
-      {{#if data.invoke.length}},
-      "invoke": [
-        {{#each data.invoke}}
-        {
-          "id": "{{id}}",
-          "src": "{{src}}"
-        }{{#unless @last}},{{/unless}}
-        {{/each}}
-      ]{{/if}}
+{{!-- *inline helper buildREADME
+function (machine, stateId, stateObj, indentLevel) {
+  // We'll build a markdown chunk for the current state, then recurse for child states
+  // Return a string that the template can place inline
+}
+--}}
 
-      {{#if data.entry.length}},
-      "entry": [
-        {{#each data.entry}}
-        "{{action.type}}"{{#unless @last}},{{/unless}}
-        {{/each}}
-      ]{{/if}}
+{{#*inline "buildREADMECode"}}
+{{!-- This is the "body" of the buildREADME function --}}
 
-      {{#if data.exit.length}},
-      "exit": [
-        {{#each data.exit}}
-        "{{action.type}}"{{#unless @last}},{{/unless}}
-        {{/each}}
-      ]{{/if}},
+  // Produce the heading lines. We'll use "##" repeated indentLevel times
+  let headingHashes = "#".repeat(indentLevel);
+  let md = "";
 
+  // If we have an ID, let's print that
+  if (stateId) {
+    md += `\n${headingHashes} ${stateId}\n`;
+  }
 
-      "states": {
-        {{#each nodes}}
-        "{{data.key}}": {
-          {{#if data.description}}
-          "description": "{{data.description}}"{{/if}}
-          {{#if data.type}}
-          {{#if data.description}},{{/if}}
-          "type": "{{data.type}}"{{/if}}
-          {{#if data.history}}
-          {{#if (or data.description data.type)}},{{/if}}
-          "history": "{{data.history}}"{{/if}}
+  // If there's a description
+  if (stateObj.description) {
+    md += `> ${stateObj.description}\n\n`;
+  }
 
-          {{#if data.entry.length}}
-          {{#if (or data.description data.type data.history)}},{{/if}}
-          "entry": [
-            {{#each data.entry}}
-            "{{action.type}}"{{#unless @last}},{{/unless}}
-            {{/each}}
-          ]{{/if}}
+  // If there's an invoked service
+  if (Array.isArray(stateObj.invoke) && stateObj.invoke.length > 0) {
+    let inv = stateObj.invoke[0];
+    md += `**Invoke** from source \`${inv.src}\` (ID: \`${inv.id}\`) \n\n`;
+  }
 
-          {{#if data.exit.length}}
-          {{#if (or data.description data.type data.history data.entry.length)}},{{/if}}
-          "exit": [
-            {{#each data.exit}}
-            "{{action.type}}"{{#unless @last}},{{/unless}}
-            {{/each}}
-          ]{{/if}}
+  // If there's entry actions
+  if (Array.isArray(stateObj.entry) && stateObj.entry.length > 0) {
+    md += `**On entry:**\n`;
+    stateObj.entry.forEach(actionName => {
+      md += `- **Do** \`${actionName}\` \n`;
+    });
+    md += `\n`;
+  }
 
-          {{#with (edgesForSource machine id) as |childEdges|}}
-            {{#with (groupTransitions childEdges) as |grouped|}}
-              {{#if (objectHasKeys grouped.named)}}
-              , "on": {
-                {{#each grouped.named}}
-                "{{@key}}":
-                  {{#if this.length}}
-                  [
-                    {{#each this}}
-                    {
-                      {{#if this.data.guard}}
-                      "guard": {
-                        "type": "{{this.data.guard.type}}"
-                      },
-                      {{/if}}
-                      {{#if this.data.actions.length}}
-                      "actions": [
-                        {{#each this.data.actions}}
-                        {
-                          "type": "{{this.action.type}}"
-                          {{#if this.action.params}}, "params": {{{json this.action.params}}}{{/if}}
-                        }{{#unless @last}},{{/unless}}
-                        {{/each}}
-                      ],
-                      {{/if}}
-                      "target": "{{target}}"
-                    }{{#unless @last}},{{/unless}}
-                    {{/each}}
-                  ]
-                  {{else}}
-                  {
-                    {{#if this.data.guard}}
-                    "guard": {
-                      "type": "{{this.data.guard.type}}"
-                    },
-                    {{/if}}
-                    {{#if this.data.actions.length}}
-                    "actions": [
-                      {{#each this.data.actions}}
-                      {
-                        "type": "{{this.action.type}}"
-                        {{#if this.action.params}}, "params": {{{json this.action.params}}}{{/if}}
-                      }{{#unless @last}},{{/unless}}
-                      {{/each}}
-                    ],
-                    {{/if}}
-                    "target": "{{this.target}}"
-                  }
-                  {{/if}}
-                {{#unless @last}},{{/unless}}
-                {{/each}}
-              }
-              {{#if (objectHasKeys grouped.after)}},{{/if}}
-              {{/if}}
-
-              {{#if (objectHasKeys grouped.after)}}
-              "after": {
-                {{#each grouped.after}}
-                "{{@key}}":
-                  {{#if this.length}}
-                  [
-                    {{#each this}}
-                    {
-                      {{#if this.data.guard}}
-                      "guard": {
-                        "type": "{{this.data.guard.type}}"
-                      },
-                      {{/if}}
-                      {{#if this.data.actions.length}}
-                      "actions": [
-                        {{#each this.data.actions}}
-                        {
-                          "type": "{{this.action.type}}"
-                          {{#if this.action.params}}, "params": {{{json this.action.params}}}{{/if}}
-                        }{{#unless @last}},{{/unless}}
-                        {{/each}}
-                      ],
-                      {{/if}}
-                      "target": "{{target}}"
-                    }{{#unless @last}},{{/unless}}
-                    {{/each}}
-                  ]
-                  {{else}}
-                  {
-                    {{#if this.data.guard}}
-                    "guard": {
-                      "type": "{{this.data.guard.type}}"
-                    },
-                    {{/if}}
-                    {{#if this.data.actions.length}}
-                    "actions": [
-                      {{#each this.data.actions}}
-                      {
-                        "type": "{{this.action.type}}"
-                        {{#if this.action.params}}, "params": {{{json this.action.params}}}{{/if}}
-                      }{{#unless @last}},{{/unless}}
-                      {{/each}}
-                    ],
-                    {{/if}}
-                    "target": "{{this.target}}"
-                  }
-                  {{/if}}
-                {{#unless @last}},{{/unless}}
-                {{/each}}
-              }
-              {{/if}}
-            {{/with}}
-          {{/with}}
-        }{{#unless @last}},{{/unless}}
-        {{/each}}
-      }
-
-      {{#with (edgesForSource machine id) as |parentEdges|}}
-        {{#with (groupTransitions parentEdges) as |grouped|}}
-          {{#if (objectHasKeys grouped.named)}}
-          , "on": {
-            {{#each grouped.named}}
-            "{{@key}}":
-              {{#if this.length}}
-              [
-                {{#each this}}
-                {
-                  {{#if this.data.guard}}
-                  "guard": {
-                    "type": "{{this.data.guard.type}}"
-                  },
-                  {{/if}}
-                  {{#if this.data.actions.length}}
-                  "actions": [
-                    {{#each this.data.actions}}
-                    {
-                      "type": "{{this.action.type}}"
-                      {{#if this.action.params}}, "params": {{{json this.action.params}}}{{/if}}
-                    }{{#unless @last}},{{/unless}}
-                    {{/each}}
-                  ],
-                  {{/if}}
-                  "target": "{{target}}"
-                }{{#unless @last}},{{/unless}}
-                {{/each}}
-              ]
-              {{else}}
-              {
-                {{#if this.data.guard}}
-                "guard": {
-                  "type": "{{this.data.guard.type}}"
-                },
-                {{/if}}
-                {{#if this.data.actions.length}}
-                "actions": [
-                  {{#each this.data.actions}}
-                  {
-                    "type": "{{this.action.type}}"
-                    {{#if this.action.params}}, "params": {{{json this.action.params}}}{{/if}}
-                  }{{#unless @last}},{{/unless}}
-                  {{/each}}
-                ],
-                {{/if}}
-                "target": "{{this.target}}"
-              }
-              {{/if}}
-            {{#unless @last}},{{/unless}}
-            {{/each}}
-          }
-          {{#if (objectHasKeys grouped.after)}},{{/if}}
-          {{/if}}
-
-          {{#if (objectHasKeys grouped.after)}}
-          "after": {
-            {{#each grouped.after}}
-            "{{@key}}":
-              {{#if this.length}}
-              [
-                {{#each this}}
-                {
-                  {{#if this.data.guard}}
-                  "guard": {
-                    "type": "{{this.data.guard.type}}"
-                  },
-                  {{/if}}
-                  {{#if this.data.actions.length}}
-                  "actions": [
-                    {{#each this.data.actions}}
-                    {
-                      "type": "{{this.action.type}}"
-                      {{#if this.action.params}}, "params": {{{json this.action.params}}}{{/if}}
-                    }{{#unless @last}},{{/unless}}
-                    {{/each}}
-                  ],
-                  {{/if}}
-                  "target": "{{target}}"
-                }{{#unless @last}},{{/unless}}
-                {{/each}}
-              ]
-              {{else}}
-              {
-                {{#if this.data.guard}}
-                "guard": {
-                  "type": "{{this.data.guard.type}}"
-                },
-                {{/if}}
-                {{#if this.data.actions.length}}
-                "actions": [
-                  {{#each this.data.actions}}
-                  {
-                    "type": "{{this.action.type}}"
-                    {{#if this.action.params}}, "params": {{{json this.action.params}}}{{/if}}
-                  }{{#unless @last}},{{/unless}}
-                  {{/each}}
-                ],
-                {{/if}}
-                "target": "{{this.target}}"
-              }
-              {{/if}}
-            {{#unless @last}},{{/unless}}
-            {{/each}}
-          }
-          {{/if}}
-        {{/with}}
-      {{/with}}
-
-    }{{#unless @last}},{{/unless}}
-    {{/each}}
-  },
-
-  "implementations": {
-    "guards": {
-      {{#each machine.implementations.guards}}
-      "{{@key}}": {
-        "id": "{{this.id}}",
-        "name": "{{this.name}}"
-      }{{#unless @last}},{{/unless}}
-      {{/each}}
-    },
-    "actions": {
-      {{#each machine.implementations.actions}}
-      "{{@key}}": {
-        "id": "{{this.id}}",
-        "name": "{{this.name}}",
-        "schema": {{{json this.schema}}}
-      }{{#unless @last}},{{/unless}}
-      {{/each}}
-    },
-    "actors": {
-      {{#each machine.implementations.actors}}
-      "{{@key}}": {
-        "id": "{{this.id}}",
-        "name": "{{this.name}}",
-        "input": {{{json this.input}}},
-        "output": {{{json this.output}}}
-      }{{#unless @last}},{{/unless}}
-      {{/each}}
-    }
-  },
-
-  "schemas": {
-    "events": {
-      {{#each machine.schemas.events}}
-      "{{@key}}": {
-        "properties": {
-          {{#each this.properties}}
-          "{{@key}}": "{{this}}"{{#unless @last}},{{/unless}}
-          {{/each}}
+  // If there's "on" transitions
+  if (stateObj.on) {
+    // stateObj.on is an object: { eventName: [ { target, guard, actions...}, ... ] }
+    for (let eventName of Object.keys(stateObj.on)) {
+      let transitions = stateObj.on[eventName];
+      transitions.forEach(t => {
+        md += `**On** \`${eventName}\``;
+        if (t.guard && t.guard.type) {
+          md += ` if \`${t.guard.type}\``;
         }
-      }{{#unless @last}},{{/unless}}
-      {{/each}}
+        md += `:\n\n`;
+        // If there's actions
+        if (Array.isArray(t.actions) && t.actions.length > 0) {
+          t.actions.forEach(act => {
+            md += `- **Do** \`${act.type}\``;
+            // If there's params
+            if (act.params && Object.keys(act.params).length > 0) {
+              md += ` with params: \n`;
+              for (let [pKey, pVal] of Object.entries(act.params)) {
+                md += `  - \`${pKey}\`: \`${pVal}\`\n`;
+              }
+            } else {
+              md += ` \n`;
+            }
+          });
+        }
+        // Then the transition
+        let anchor = toAnchor(t.target);
+        md += `- **Transition** to [${t.target}](#${anchor})\n\n`;
+      });
     }
   }
+
+  // If there's "after" transitions
+  if (stateObj.after) {
+    // e.g. { TRANSITION_DELAY: [ { actions: [...], target: "..." }, ... ] }
+    for (let delayName of Object.keys(stateObj.after)) {
+      let transitions = stateObj.after[delayName];
+      transitions.forEach(t => {
+        md += `**On** \`xstate.after(${delayName})#${stateId}\``;
+        if (t.guard && t.guard.type) {
+          md += ` if \`${t.guard.type}\``;
+        }
+        md += `:\n\n`;
+        // If there's actions
+        if (Array.isArray(t.actions) && t.actions.length > 0) {
+          t.actions.forEach(act => {
+            md += `- **Do** \`${act.type}\``;
+            // If there's params
+            if (act.params && Object.keys(act.params).length > 0) {
+              md += ` with params: \n`;
+              for (let [pKey, pVal] of Object.entries(act.params)) {
+                md += `  - \`${pKey}\`: \`${pVal}\`\n`;
+              }
+            } else {
+              md += ` \n`;
+            }
+          });
+        }
+        // Then the transition
+        let anchor = toAnchor(t.target);
+        md += `- **Transition** to [${t.target}](#${anchor})\n\n`;
+      });
+    }
+  }
+
+  // If there's exit actions
+  if (Array.isArray(stateObj.exit) && stateObj.exit.length > 0) {
+    md += `**On exit:**\n`;
+    stateObj.exit.forEach(actionName => {
+      md += `- **Do** \`${actionName}\` \n`;
+    });
+    md += `\n`;
+  }
+
+  // Now, if there's child states
+  if (stateObj.states && Object.keys(stateObj.states).length > 0) {
+    // Recurse
+    for (let [subKey, subStateObj] of Object.entries(stateObj.states)) {
+      let subId = stateId ? stateId + "." + subKey : subKey;
+      md += buildREADME(machine, subId, subStateObj, indentLevel);
+    }
+  }
+
+  return md;
+}}
+{{/inline}}
+
+{{!-- 
+  We reference "machine" below because "this" is the entire data object.
+  We'll produce a top-level heading for the machine, then walk each top-level state.
+--}}
+
+{{!-- *inline helper buildFullReadme
+function (machine) {
+  // We'll create the top-level readme for the root machine, 
+  // then recursively build for each top-level state
 }
-{{/with}}
+--}}
+
+## {{id}}
+> {{description}}
+
+{{#each states as |topStateObj topStateKey|}}
+{{buildREADME ../ this topStateKey topStateObj (concat ../id "." topStateKey) 2}}
+{{/each}}

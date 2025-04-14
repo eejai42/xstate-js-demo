@@ -28,6 +28,26 @@
       "Name": "JsonHbarsTransform",
       "RelativePath": "/traffic-light-demo1/python",
       "CommandLine": "json-hbars-transform -i ../machine.json -i .\\python_sdk.hbr"
+    },
+    {
+      "MatchedTranspiler": {
+        "Name": "JsonHbarsTransform",
+        "Description": "Json-Hbars-Transform"
+      },
+      "IsSSoTTranspiler": false,
+      "Name": "JsonHbarsTransform",
+      "RelativePath": "/hbars2",
+      "CommandLine": "json-hbars-transform -i .\\machine-project.json -i .\\machine.hbars -o machine.json"
+    },
+    {
+      "MatchedTranspiler": {
+        "Name": "JsonHbarsTransform",
+        "Description": "Json-Hbars-Transform"
+      },
+      "IsSSoTTranspiler": false,
+      "Name": "JsonHbarsTransform",
+      "RelativePath": "/hbars2/xstatejs-readme",
+      "CommandLine": "json-hbars-transform -i ../machine.json -i .\\README.hbars -o README.md"
     }
   ]
 }

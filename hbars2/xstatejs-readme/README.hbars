@@ -1,0 +1,136 @@
+{{!-- README.hbars --}}
+
+{{!-- *inline helper objectHasKeys
+function (obj) {
+  return obj && Object.keys(obj).length > 0;
+}
+--}}
+
+{{!-- *inline helper toAnchor
+function(str) {
+  return str
+    .replace(/[.]/g, "")
+    .replace(/['"]/g, "")
+    .replace(/ /g, "")
+    .replace(/-/g, "")
+    .toLowerCase();
+}
+--}}
+
+{{!--
+ We define two partials:
+ - renderTopState: for top-level states
+ - renderState: for any state (top-level or nested)
+
+ We pass the "key" and "parentId" explicitly, so we never do {{../@key}}.
+ This avoids the parse error "Expecting 'ID', got 'DATA'".
+--}}
+
+{{#*inline "renderState"}}
+## {{parentId}}.{{stateKey}}
+{{#if state.description}}
+> {{state.description}}
+
+{{/if}}
+
+{{!-- invoked service --}}
+{{#if state.invoke.length}}
+**Invoke** from source `{{state.invoke.[0].src}}` (ID: `{{state.invoke.[0].id}}`) 
+
+{{/if}}
+
+{{!-- on entry --}}
+{{#if state.entry.length}}
+**On entry:**
+{{#each state.entry}}
+- **Do** `{{this}}` 
+{{/each}}
+
+{{/if}}
+
+{{!-- "on" transitions --}}
+{{#if state.on}}
+{{#each state.on as |transitions eventName|}}
+  {{#each transitions}}
+**On** `{{eventName}}`
+{{#if this.guard}}
+ if `{{this.guard.type}}`
+{{/if}}:
+
+{{#if this.actions}}
+{{#each this.actions}}
+- **Do** `{{this.type}}`
+{{#if this.params}}
+{{#each this.params as |val key|}}
+  - `{{key}}`: `{{val}}`
+{{/each}}
+{{/if}}
+{{/each}}
+{{/if}}
+- **Transition** to [{{this.target}}](#{{toAnchor this.target}})
+
+{{/each}}
+{{/each}}
+{{/if}}
+
+{{!-- "after" transitions --}}
+{{#if state.after}}
+{{#each state.after as |transitions delayName|}}
+  {{#each transitions}}
+**On** `xstate.after({{delayName}})#{{parentId}}.{{stateKey}}`
+{{#if this.guard}}
+ if `{{this.guard.type}}`
+{{/if}}:
+
+{{#if this.actions}}
+{{#each this.actions}}
+- **Do** `{{this.type}}`
+{{#if this.params}}
+{{#each this.params as |val key|}}
+  - `{{key}}`: `{{val}}`
+{{/each}}
+{{/if}}
+{{/each}}
+{{/if}}
+- **Transition** to [{{this.target}}](#{{toAnchor this.target}})
+
+{{/each}}
+{{/each}}
+{{/if}}
+
+{{!-- on exit --}}
+{{#if state.exit.length}}
+**On exit:**
+{{#each state.exit}}
+- **Do** `{{this}}` 
+{{/each}}
+
+{{/if}}
+
+{{!-- Child states (recursive) --}}
+{{#if (objectHasKeys state.states)}}
+{{#each state.states as |subStateObj subKey|}}
+{{> renderState state=subStateObj stateKey=subKey parentId=(concat (concat parentId "." stateKey) "." subKey)}}
+{{/each}}
+{{/if}}
+{{/inline}}
+
+{{#*inline "renderTopState"}}
+## {{id}}
+> {{description}}
+
+{{#each states as |topStateObj topKey|}}
+{{> renderState 
+   state=topStateObj 
+   stateKey=topKey 
+   parentId=id
+}}
+{{/each}}
+{{/inline}}
+
+{{!-- Finally, we call "renderTopState" at the root --}}
+{{> renderTopState 
+   id=id 
+   description=description
+   states=states
+}}
