@@ -20,8 +20,8 @@ export default function App() {
           <div className="state-key">walk</div>
           <p className="state-description">The pedestrian walk signal is on. Pedestrians can cross. The light will turn to stop next.</p>
           <div>
-            <button className="event-button" onClick={() => send({ type: 'TIMER' })}>TIMER</button>
-        <button className="event-button" onClick={() => send({ type: 'Event2' })}>Event2</button>
+            <button className="event-button" onClick={() => send({ type: 'TICK' })}>TIMER</button>
+        <button className="event-button" onClick={() => send({ type: '' })}>Event2</button>
           </div>
         
           

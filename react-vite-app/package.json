@@ -14,7 +14,7 @@
     "cross-env": "^7.0.3",
     "react": "^19.0.0",
     "react-dom": "^19.1.0",
-    "xstate": "latest"
+    "xstate": "^5.19.2"
   },
   "devDependencies": {
     "@eslint/js": "^9.21.0",

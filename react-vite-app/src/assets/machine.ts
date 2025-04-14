@@ -1,6 +1,10 @@
-import { setup } from "xstate";
+import { setup, fromPromise } from "xstate";
 
 export const machine = setup({
+  delays: {
+    TRANSITION_DELAY: 1000,
+    PEDESTRIAN_DELAY: 2000,
+  },
   types: {
     context: {} as { counter: number; NightProfile: boolean },
     events: {} as
@@ -14,33 +18,38 @@ export const machine = setup({
   },
   actions: {
     logEnterGreen: function ({ context, event }, params) {
+      console.info("Entering green state", context, event, params);
       // Add your action code here
       // ...
     },
     logExitGreen: function ({ context, event }, params) {
+      console.info("Exiting green state", context, event, params);
       // Add your action code here
       // ...
     },
     incrementCounter: function ({ context, event }, params) {
+      console.info("Incrementing counter", context, event, params);
       // Add your action code here
       // ...
     },
     doThisThatOrTheOther: function ({ context, event }, params) {
+      console.info("Doing this that or the other", context, event, params);
       // Add your action code here
-      // ...
     },
   },
   actors: {
-    timerService: createMachine({
-      /* ... */
+    timerService: fromPromise(async () => {
+      // ...
     }),
   },
   guards: {
     isCounterReached: function ({ context, event }) {
+      console.info("Checking if counter is reached", context, event);
       // Add your guard condition here
       return true;
     },
     isNightProfile: function ({ context, event }) {
+      console.info("Checking if NightProfile is active", context, event);
       // Add your guard condition here
       return true;
     },
@@ -78,9 +87,6 @@ export const machine = setup({
             },
             TICK: {
               target: "orange",
-              actions: {
-                type: "incrementCounter",
-              },
               guard: {
                 type: "isCounterReached",
               },
@@ -89,19 +95,7 @@ export const machine = setup({
           after: {
             TRANSITION_DELAY: {
               target: "orange",
-              actions: {
-                type: "doThisThatOrTheOther",
-                params: {
-                  test: 42,
-                },
-              },
             },
-          },
-          entry: {
-            type: "logEnterGreen",
-          },
-          exit: {
-            type: "logExitGreen",
           },
           description: "Green light. Eventually transitions to orange.",
         },
